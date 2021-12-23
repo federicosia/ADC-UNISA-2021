@@ -1,13 +1,21 @@
 package com.unisa.git;
 
-/**
- * Hello world!
- *
- */
+import java.io.IOException;
+
 public class Main 
 {
-    public static void main( String[] args )
-    {
-        System.out.println( "Hello World!" );
+    public static void main( String[] args ) {
+        int id = 0;
+        try {
+            GitProtocol git = new GitProtocolImpl(new Storage(id, "127.0.0.1"));
+            
+
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }
