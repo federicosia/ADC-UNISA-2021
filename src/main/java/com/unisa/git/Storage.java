@@ -40,36 +40,24 @@ public class Storage {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    public boolean put(String key, Repository repository) throws ClassNotFoundException, IOException{
-        if(this.get(key) == null){
-            //let's add the repo in the peer's dht
-            try {
-                dht.put(Number160.createHash(key)).data(new Data(repository)).start().awaitUninterruptibly();
-
-                return true;
-            } catch (IOException e) {
-                e.printStackTrace();
-
-                return false;
-            }
-        }
-        return false;
+    public boolean put(String key, Repository repository) throws IOException{
+        dht.put(Number160.createHash(key)).data(new Data(repository)).start().awaitUninterruptibly();
+        return true;
     }
 
     /**
      * Check if a repository with the same key is present in the peer's DHT
      * @param key key needed to locate the repository in the peer's DHT
-     * @return true if a repo with the same key is present, false otherwise
+     * @return the repository with the name equals to key, null otherwise
      * @throws IOException
      * @throws ClassNotFoundException
      */
     public Repository get(String key) throws ClassNotFoundException, IOException{
         FutureGet futureGet = dht.get(Number160.createHash(key)).start();
         futureGet.awaitUninterruptibly();
-        if(futureGet.isSuccess() && futureGet.isEmpty()){
+        if(futureGet.isSuccess() && (futureGet.dataMap().values() != null)){
             return (Repository) futureGet.dataMap().values().iterator().next().object();
         }
-        else 
-            return null;
+        else return null;
     }
 }
