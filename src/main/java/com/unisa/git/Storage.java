@@ -3,14 +3,12 @@ package com.unisa.git;
 import java.io.IOException;
 import java.net.InetAddress;
 
-import io.netty.util.concurrent.Future;
 import net.tomp2p.dht.FutureGet;
 import net.tomp2p.dht.PeerBuilderDHT;
 import net.tomp2p.dht.PeerDHT;
 import net.tomp2p.futures.FutureBootstrap;
 import net.tomp2p.p2p.PeerBuilder;
 import net.tomp2p.peers.Number160;
-import net.tomp2p.relay.android.gcm.FutureGCM;
 import net.tomp2p.storage.Data;
 
 /**
