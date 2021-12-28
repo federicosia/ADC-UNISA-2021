@@ -5,12 +5,13 @@ import java.io.IOException;
 import java.util.List;
 
 public class GitProtocolImpl implements GitProtocol{
-    private Storage storage;
-    //TODO maybe is a list...
+    private GitStorage storage;
+    //TODO maybe it's a list...
     private Repository localRepo;
 
-    public GitProtocolImpl(Storage storage) throws Exception{
+    public GitProtocolImpl(GitStorage storage, MessageListener listener) throws IOException{
         this.storage = storage;
+        this.storage.objectReply(listener);
     }
 
     @Override
@@ -22,9 +23,7 @@ public class GitProtocolImpl implements GitProtocol{
             }
             else 
                 return false;
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         return false;
@@ -33,7 +32,10 @@ public class GitProtocolImpl implements GitProtocol{
     @Override
     public boolean addFilesToRepository(String _repo_name, List<File> files) {
         try {
-            return localRepo.addFile(files);
+            if(localRepo != null && localRepo.getName().equals(_repo_name))
+                return localRepo.addFile(files);
+            else 
+                return false;
         } catch (IOException e) {
             e.printStackTrace();
             return false;
@@ -42,7 +44,7 @@ public class GitProtocolImpl implements GitProtocol{
 
     @Override
     public boolean commit(String _repo_name, String _message) {
-        if(localRepo != null){
+        if(localRepo != null && localRepo.getName().equals(_repo_name)){
             localRepo.addCommit(new Commit(_repo_name, _message));
             return true;
         } 
@@ -54,7 +56,7 @@ public class GitProtocolImpl implements GitProtocol{
         try {
             Repository remoteRepo = storage.get(_repo_name);
             //check if remote and local repos exists, then check if are different
-            if((remoteRepo != null) && (localRepo != null)){
+            if((remoteRepo != null) && (localRepo != null) && (remoteRepo.getName().equals(localRepo.getName()))){
                 //if not equals than there's something to push
                 if(!remoteRepo.getId().equals(localRepo.getId())){
                     storage.put(localRepo.getName(), localRepo);
@@ -75,7 +77,7 @@ public class GitProtocolImpl implements GitProtocol{
         try {
             Repository remoteRepo = storage.get(_repo_name);
             //check if remote and local repos exists, then check if are different
-            if((remoteRepo != null) && (localRepo != null)){
+            if((remoteRepo != null) && (localRepo != null) && (remoteRepo.getName().equals(localRepo.getName()))){
                 //if not equals than there's something to push
                 if(!remoteRepo.getId().equals(localRepo.getId())){
                     localRepo = storage.get(_repo_name);
