@@ -35,7 +35,7 @@ public class GitStorage implements Storage{
     public Repository get(String key) throws ClassNotFoundException, IOException{
         FutureGet futureGet = dht.get(Number160.createHash(key)).start();
         futureGet.awaitUninterruptibly();
-        if(futureGet.isSuccess() && (futureGet.dataMap().values() != null)){
+        if(futureGet.isSuccess() && !futureGet.dataMap().values().isEmpty()){
             return (Repository) futureGet.dataMap().values().iterator().next().object();
         }
         else return null;

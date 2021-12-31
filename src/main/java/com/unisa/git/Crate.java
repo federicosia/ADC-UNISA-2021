@@ -14,7 +14,8 @@ public class Crate {
     private String id;
     private boolean commited;
 
-    public Crate(File file) throws IOException {
+    public Crate(File file) throws IOException  {
+        this.content = file;
         this.id = UUID.nameUUIDFromBytes(Files.readAllBytes(file.toPath())).toString();
         this.commited = false;
     }
@@ -35,5 +36,18 @@ public class Crate {
 
     public String getId(){
         return id;
+    }
+
+    @Override
+    public boolean equals(Object object){
+        if(object instanceof Crate){
+            Crate crate = (Crate) object;
+            if(this.getId().equals(crate.getId()))
+                return true;
+            else 
+                return false;
+        }
+        else 
+            return false;
     }
 }
