@@ -53,10 +53,17 @@ public class Main
                 //the first string is the command
                 switch(splitInput[0]){
                     case CREATE:
-                        if(splitInput.length != 3)
+                        if(splitInput.length != 3 && splitInput.length != 2)
                             terminal.printf(tip(splitInput[0]));
                         else {
-                            boolean result = git.createRepository(splitInput[1], new File(splitInput[2]));
+                            String path;
+                            //Use the current path to create a repo
+                            if(splitInput.length == 2)
+                                path = System.getProperty("user.dir");
+                            else
+                                path = splitInput[2];
+
+                            boolean result = git.createRepository(splitInput[1], new File(path));
                             if(result) 
                                 terminal.println("Repository created successfully!\n");
                             else 
@@ -131,7 +138,7 @@ public class Main
                 "\tcreate\tallows you the creation of a local repository.\n" +
                 "\t\tSyntax: git create {0} {1}\n\t\targs: {0} repository name, {1} directory name.\n\n" +
                 "\tadd\tallows you to add a file in a local repository.\n" +
-                "\t\tSyntax: git add {0} || [list]\n\t\targs: {0} file name or directory, [list] file names separeted by a space\n\n" +
+                "\t\tSyntax: git add {0} {1} || [list]\n\t\targs: {0} repository name, {1} file name or directory, [list] file names separeted by a space\n\n" +
                 "\tcommit\tallows you the creation of commit in the local repository.\n" +
                 "\t\tSyntax: git commit {0}, {1}\n\t\targs: {0} repository name, {1} message\n\n" +
                 "\tpush\tallows you to push files to the remote repository.\n" +
@@ -152,7 +159,8 @@ public class Main
             case CREATE:
                 return "\n\tSyntax error: git create {0} {1}\n\t\targs: {0} repository name, {1} directory name.\n\n";
             case ADD:
-                return "Syntax error:  git add {0} || [list]\n\t\targs: {0} file name or directory," +
+                return "Syntax error:  git add {0} {1} || [list]\n\t\targs: {0} repository name," + 
+                        " {1} file name or directory," +
                         " [list] file names separeted by a space\n\n";
             case COMMIT:
                 return "Syntax error: git commit {0}, {1}\n\t\targs: {0} repository name, {1} message\n\n";

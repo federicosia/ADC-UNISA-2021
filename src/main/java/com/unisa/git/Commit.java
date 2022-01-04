@@ -1,14 +1,15 @@
 package com.unisa.git;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public class Commit {
+public class Commit implements Serializable{
     private String repositoryName;
     private String message;
     private String date;
     private String id;
-
+    private boolean pushed;
     /**
      * Create a new commit, a date and a unique id are created to indetify uniquely the commit
      * @param repo name of the repository
@@ -19,6 +20,7 @@ public class Commit {
         this.message = message;
         this.date = LocalDate.now().toString();
         this.id = UUID.randomUUID().toString();
+        this.pushed = false;
     }
 
     /**
@@ -41,7 +43,7 @@ public class Commit {
      * Returns the date when the commit was made
      * @return the date when the commit was made
      */
-    public String getLocalDate(){
+    public String getDate(){
         return date;
     }
     /**
@@ -50,5 +52,32 @@ public class Commit {
      */
     public String getId(){
         return id;
+    }
+
+    /**
+     * Update the status to prepare the commit to been pushed to the remote repository
+     * @return true if is ready, false otherwise
+     */
+    public boolean updateStatus(){
+        if(!pushed){
+            pushed = true;
+            return pushed;
+        }
+        else return false;
+    }
+
+    @Override
+    public boolean equals(Object object){
+        if(object instanceof Commit){
+            Commit commit = (Commit) object;
+            if(this.id.equals(commit.getId()) && this.date.equals(commit.getDate()))
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public String toString(){
+        return "[Message " + this.message + " Date " + this.date + "]";
     }
 }

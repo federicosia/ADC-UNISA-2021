@@ -8,7 +8,6 @@ import com.unisa.git.exceptions.RepositoryException;
 
 public class GitProtocolImpl implements GitProtocol{
     private GitStorage storage;
-    //TODO maybe it's a list...
     private Repository localRepo;
 
     public GitProtocolImpl(GitStorage storage, MessageListener listener) throws IOException{
@@ -18,15 +17,15 @@ public class GitProtocolImpl implements GitProtocol{
 
     @Override
     public boolean createRepository(String _repo_name, File _directory) {
-        try {
-            if((storage.get(_repo_name) == null) && _directory.isDirectory()){
+        try{
+            if((localRepo == null) && _directory.isDirectory()){
                 localRepo = new Repository(_repo_name, _directory);
                 return true;
             }
             else 
                 return false;
-        } catch (IOException | ClassNotFoundException e) {
-            System.err.println(e);
+        } catch(IOException e){
+            e.printStackTrace();
             return false;
         }
     }
@@ -46,16 +45,10 @@ public class GitProtocolImpl implements GitProtocol{
 
     @Override
     public boolean commit(String _repo_name, String _message) {
-        try {
-            if(localRepo != null && localRepo.getName().equals(_repo_name))
-                return localRepo.addCommit(new Commit(_repo_name, _message));
-            else
-                return false;
-        }
-        catch (RepositoryException e) {
-            System.err.println(e);
+        if(localRepo != null && localRepo.getName().equals(_repo_name))
+            return localRepo.addCommit(new Commit(_repo_name, _message));
+        else
             return false;
-        }
     }
 
     @Override
@@ -64,17 +57,27 @@ public class GitProtocolImpl implements GitProtocol{
             Repository remoteRepo = storage.get(_repo_name);
             //check if remote and local repos exists, then check if are different
             if((remoteRepo != null) && (localRepo != null) && remoteRepo.getName().equals(localRepo.getName())){
-                //if not equals than there's something to push
-                if(!remoteRepo.getId().equals(localRepo.getId())){
-                    if(storage.put(localRepo.getName(), localRepo))
-                        return "Pushed all files successfully!";
-                    else
-                        return "Push to the remote repository failed...";
-                } else 
-                    return "Nothing to push...";
+                //if equals than we can check if there's something to push, otherwise we have to pull before push
+                if(remoteRepo.equals(localRepo)){
+                    //Check if the are commits to push, otherwise local and remote are equals
+                    if(localRepo.checkBeforePush()){
+                        if(storage.put(localRepo.getName(), localRepo))
+                            return "Pushed all files successfully!";
+                        else
+                            return "Push to the remote repository failed...";
+                    }
+                    else return "Nothing to push...";
+                }
+                //Someone has pushed something, the repository must be updated with pull before pushing
+                else return "The repository is out of date, do a pull before pushing...";
             }
-            else 
-                return "Repos missing...";
+            //Just push and check if there are commits to push
+            else {
+                if(localRepo.checkBeforePush() && storage.put(localRepo.getName(), localRepo))
+                    return "Created new remote repository, pushed all files successfully!";
+                else
+                    return "Creation of new remote repository and push failed...";
+            }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             return "Something went wrong...";
@@ -86,19 +89,25 @@ public class GitProtocolImpl implements GitProtocol{
         try {
             Repository remoteRepo = storage.get(_repo_name);
             //check if remote and local repos exists, then check if are different
-            if((remoteRepo != null) && (localRepo != null) && (remoteRepo.getName().equals(localRepo.getName()))){
-                //if not equals than there's something to push
-                if(!remoteRepo.getId().equals(localRepo.getId())){
-                    localRepo = storage.get(_repo_name);
-                    if(localRepo != null)
-                        return "Pulled all files successfully!";
-                    else
-                        return "Pull remote repository failed...";
-                } else 
-                    return "Nothing to pull...";
-            }
-            else 
-                return "Repos missing...";
+            if(remoteRepo != null){ 
+                if((localRepo != null) && remoteRepo.getName().equals(localRepo.getName())){
+                    //if the local repose doesn't have the last commit of the remote repo
+                    //than a pull is needed, otherwise it's up to date
+                    if(!localRepo.checkLastCommit(remoteRepo)){
+                        if(localRepo.findConflicts(storage.get(_repo_name))){
+                            localRepo.materialize();
+                            return "Pulled, but some files are duplicated because some conflicts are present.";
+                        }
+                        else{
+                            localRepo.materialize();
+                            return "Pulled, no conflicts are present!";
+                        }
+                    }
+                    else return "All up to date!";
+                } 
+                else return "You are working on a local repository completely different...";
+            } 
+            else return "Repository missing...";
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             return "Something went wrong...";
