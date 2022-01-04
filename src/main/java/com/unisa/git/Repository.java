@@ -1,19 +1,18 @@
 package com.unisa.git;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import com.unisa.git.exceptions.RepositoryException;
@@ -37,7 +36,7 @@ public class Repository implements Serializable{
         this.uncommittedFiles = new HashMap<>();
         this.commits = new ArrayList<>();
         this.commitsNotPushed = new ArrayList<>();
-        this.id = UUID.nameUUIDFromBytes(Files.readAllBytes(path.toPath())).toString();
+        this.id = "null";
         this.path.mkdir();
     }
 
@@ -51,24 +50,36 @@ public class Repository implements Serializable{
 
     /**
      * Returns the id of the repository, it's generated again every time this method is called.
+     * The id is produced from the content of the repository.
      * @return id the new id generated
      * @throws IOException problems when reading from the file
      */
     public String getId() throws IOException {
-        this.id = UUID.nameUUIDFromBytes(Files.readAllBytes(path.toPath())).toString();
+        //Read all bytes of all 
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        for(Map.Entry<String, Crate> entry: this.files.entrySet()){
+            if(entry.getValue().update())
+                outputStream.write(entry.getValue().getContent());
+            else 
+                this.files.remove(entry.getKey());
+        }
+        //Gain all bytes read from the directory of the repository
+        byte[] dirBytes = outputStream.toByteArray();
+        //Generate the new id from the bytes of the directory
+        this.id = UUID.nameUUIDFromBytes(dirBytes).toString();
         return id;
     }
 
     @Override
     public boolean equals(Object object){
-        try {
+        try{
             if(object instanceof Repository){
                 Repository repo = (Repository) object;
-            
-                if(this.getId().equals(repo.getId()))
+                //System.out.println("Id1 -> "+id+"\nId2 -> "+repo.id);
+                if(this.getId().equals(repo.id))
                     return true;
             }
-        } catch (IOException e) {
+        } catch(IOException e){
             e.printStackTrace();
             return false;
         }
@@ -103,7 +114,7 @@ public class Repository implements Serializable{
                     if(path_to_file.isDirectory())
                         this.addFile(Arrays.asList(path_to_file.listFiles()));
 
-                    this.uncommittedFiles.replace(fileName, oldCrate, newCrate);
+                    this.uncommittedFiles.put(fileName, newCrate);
                 }
                 else throw new RepositoryException(fileName + " already present...");
             } 
@@ -115,42 +126,17 @@ public class Repository implements Serializable{
      * Do a commit, last step before the push of the modified files in the remote repository
      * @param commit commit to be made, compose by the repository name and a message.
      * @return true if there's something to commit, false otherwise.
+     * @throws IOException
      */
-    public boolean addCommit(Commit commit) {
+    public boolean addCommit(Commit commit) throws IOException {
         if(uncommittedFiles.size() > 0){
-            //commits.add(commit);
             commitsNotPushed.add(commit);
             for(Crate crate : uncommittedFiles.values()){
                 files.put(crate.getName(), crate);
             }
             uncommittedFiles.clear();
+            this.id = getId();
             return true;
-        }
-        return false;
-    }
-
-    /**
-     * Check if the last commit of the remote repository is present in the local repository. 
-     * Receiving true means that current repository is up to date, otherwise 
-     * a pull is required before pushing something.
-     * @param repository the repository to compare with
-     * @return true if the current repository has the last commit, false otherwise.
-     */
-    public boolean checkLastCommit(Repository repository){
-        if(!this.commits.isEmpty() && !repository.commits.isEmpty()){    
-            Commit lastCommitRemoteRepo = repository.commits.get(repository.commits.size() - 1);
-            //start from the last commit
-            for(int i = this.commits.size() - 1; i >= 0; i--){
-                Commit commit = this.commits.get(i);
-                
-                //if the current commit happened before the last commmit of the remote repository
-                //then it's useless looking for the target commit. 
-                if(LocalDate.parse(commit.getDate()).isBefore(LocalDate.parse(lastCommitRemoteRepo.getDate())))
-                    break;
-
-                if(commit.equals(lastCommitRemoteRepo))
-                    return true;
-            }
         }
         return false;
     }
@@ -171,55 +157,51 @@ public class Repository implements Serializable{
                     commitsNotPushed.remove(i);
                 }
             }
-            this.id = getId();
             return true;
         }
         return false;
     }
 
     /**
-     * Finds conflicts in the current repository with the one passed as argument at method call.
+     * Donwload files in the current repository from the repository passed as argument.
      * This method doesn't fix conflicts, it just finds them and duplicate the files with different names,
-     * the developer should fix the conflicts manually.
+     * the developer should fix the conflicts manually. Files that are not present in the 
+     * local repository will be simply added.
      * @param repository the repository to compare with the current repository
-     * @return true if one or more conflicts where present, false otherwise.
+     * @return 0 if no upgrades were made, 1 if files were added without conflicts, 
+     * 2 if files were added but with conflicts
      * @throws IOException
      */
-    public boolean findConflicts(Repository repository) throws IOException{
-        boolean conflicts = false;
+    public int update(Repository repository) throws IOException{
+        int result = 0;
         for(String filename : repository.files.keySet()){
-            //For each file in the current repo, if is present in the target repo than add the copy
-            //in the current repo with different name
             if(this.files.containsKey(filename)){
                 //also check if the content is different, otherwise do nothing
                 if(!Arrays.equals(this.files.get(filename).getContent(), repository.files.get(filename).getContent())){
                     this.files.put(filename + "_(1)", repository.files.get(filename));
-                    conflicts = true;
+                    result = 2;
                 }
+                //else nothing
             }
             //else just add it in the repository
-            else this.files.put(filename, repository.files.get(filename));
+            else{
+                this.files.put(filename, repository.files.get(filename));
+                result = 1;
+            }
         }
+        materialize();
         this.id = getId();
-        return conflicts;
+        return result;
     }
 
     /**
      * Creates a representation of the files in the repository in the file system.
-     * @return false if something went wrong, true otherwise
+     * @throws IOException if something went wrong
      */
-    public boolean materialize(){
-        try {
-            System.out.println("Taglia files -> "+files.size()+""); 
-            for(Crate crate: this.files.values()){
-                System.out.println(this.getPath().concat("\\" + crate.getName()));
-                Path path = Paths.get(this.getPath().concat("\\"+crate.getName()));
-                Files.write(path, crate.getContent());
-            }
-            return true;
-        } catch (IOException e) {
-            System.err.println(e);
-            return false;
+    private void materialize() throws IOException{
+        for(Crate crate: this.files.values()){
+            Path path = Paths.get(this.getPath().concat("\\"+crate.getName()));
+            Files.write(path, crate.getContent());
         }
     }
 }

@@ -15,11 +15,13 @@ import java.util.UUID;
  */
 public class Crate implements Serializable{
     private String name;
+    private File file;
     private byte[] content;
     private String id;
 
     public Crate(File file) throws IOException  {
         this.name = file.getName();
+        this.file = file;
         this.content = Files.readAllBytes(file.toPath());
         this.id = UUID.nameUUIDFromBytes(Files.readAllBytes(file.toPath())).toString();
     }
@@ -34,6 +36,19 @@ public class Crate implements Serializable{
 
     public byte[] getContent(){
         return content;
+    }
+
+    /**
+     * Upgrade the content and the id of the crate.
+     * @throws IOException something went wrong...
+     * @return true if crate was update successfully, false otherwise
+     */
+    public boolean update() throws IOException{
+        if(!this.file.exists())
+            return false;
+        this.content = Files.readAllBytes(file.toPath());
+        this.id = UUID.nameUUIDFromBytes(Files.readAllBytes(file.toPath())).toString();    
+        return true;
     }
 
     @Override
