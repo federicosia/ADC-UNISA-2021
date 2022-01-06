@@ -38,7 +38,7 @@ public class GitProtocolImpl implements GitProtocol{
             else 
                 return false;
         } catch (IOException | RepositoryException e) {
-            System.err.println(e);
+            System.err.println(e.getMessage());
             return false;
         }        
     }
@@ -47,7 +47,7 @@ public class GitProtocolImpl implements GitProtocol{
     public boolean commit(String _repo_name, String _message) {
         try{
             if(localRepo != null && localRepo.getName().equals(_repo_name))
-                return localRepo.addCommit(new Commit(_repo_name, _message));
+                return localRepo.addCommit(_repo_name, _message);
             else
                 return false;
         } catch (IOException e) {
@@ -64,8 +64,8 @@ public class GitProtocolImpl implements GitProtocol{
             if(localRepo != null){
                 //check if remote repository exists, then check if are different
                 if((remoteRepo != null) && remoteRepo.getName().equals(localRepo.getName())){
-                    //if equals than we can check if there's something to push, otherwise we have to pull before push
-                    if(remoteRepo.equals(localRepo)){
+                    //if true then we can push to remote
+                    if(localRepo.checkLastCommit(remoteRepo)){
                         //Check if the are commits to push, otherwise local and remote are equals
                         if(localRepo.checkBeforePush()){
                             if(storage.put(localRepo.getName(), localRepo))
@@ -99,10 +99,8 @@ public class GitProtocolImpl implements GitProtocol{
             Repository remoteRepo = storage.get(_repo_name);
             //check if remote and local repos exists, then check if are different
             if(remoteRepo != null){ 
-                if((localRepo != null)){
-                    //if the local repose doesn't have the last commit of the remote repo
-                    //than a pull is needed, otherwise it's up to date
-                    if(!localRepo.equals(remoteRepo)){
+                if((localRepo != null) && localRepo.getName().equals(remoteRepo.getName())){
+                    if(!localRepo.checkLastCommit(remoteRepo)){
                         switch(localRepo.update(remoteRepo)){
                             case 0:
                                 return "All up to date!\n";
@@ -115,10 +113,10 @@ public class GitProtocolImpl implements GitProtocol{
                         }
                     }
                     else return "All up to date!\n";
-                } 
+                }
                 else return "Create a local repository first...\n";
             } 
-            else return "Repository missing...\n";
+            else return "Remote repository missing...\n";
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             return "Something went wrong...\n";

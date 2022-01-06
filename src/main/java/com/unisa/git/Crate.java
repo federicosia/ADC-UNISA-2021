@@ -20,7 +20,7 @@ public class Crate implements Serializable{
         this.name = file.getName();
         this.file = file;
         this.content = Files.readAllBytes(file.toPath());
-        this.id = UUID.nameUUIDFromBytes(Files.readAllBytes(file.toPath())).toString();
+        this.id = UUID.nameUUIDFromBytes(this.content).toString();
     }
 
     public String getName(){
@@ -44,7 +44,7 @@ public class Crate implements Serializable{
         if(!this.file.exists())
             return false;
         this.content = Files.readAllBytes(file.toPath());
-        this.id = UUID.nameUUIDFromBytes(Files.readAllBytes(file.toPath())).toString();    
+        this.id = UUID.nameUUIDFromBytes(this.content).toString();    
         return true;
     }
 
@@ -52,7 +52,7 @@ public class Crate implements Serializable{
     public boolean equals(Object object){
         if(object instanceof Crate){
             Crate crate = (Crate) object;
-            if(this.getId().equals(crate.getId()))
+                if(this.getId().equals(crate.getId()) && this.name.equals(crate.name))
                 return true;
         }
         return false;

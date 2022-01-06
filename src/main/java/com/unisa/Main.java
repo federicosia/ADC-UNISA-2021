@@ -82,8 +82,6 @@ public class Main
                             boolean result = git.addFilesToRepository(splitInput[1], files);
                             if(result)
                                 terminal.println("Added files successfully!\n");
-                            else 
-                                terminal.println("Add failed...\n");
                         }
                         break;
                     case COMMIT:

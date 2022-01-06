@@ -1,7 +1,9 @@
 package com.unisa.git;
 
+import java.io.File;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class Commit implements Serializable{
@@ -10,6 +12,8 @@ public class Commit implements Serializable{
     private String date;
     private String id;
     private boolean pushed;
+    private ArrayList<String> name_files;
+
     /**
      * Create a new commit, a date and a unique id are created to indetify uniquely the commit
      * @param repo name of the repository
@@ -21,6 +25,7 @@ public class Commit implements Serializable{
         this.date = LocalDate.now().toString();
         this.id = UUID.randomUUID().toString();
         this.pushed = false;
+        this.name_files = new ArrayList<String>();
     }
 
     /**
@@ -55,6 +60,28 @@ public class Commit implements Serializable{
     }
 
     /**
+     * Add the name of the file in the commits, only for log purposes.
+     * @param filename name of the file to be added in the commit
+     */
+    public void addFile(String filename){
+        name_files.add(filename);
+    }
+
+    /**
+     * Prints the whole list as a string
+     * @return string that reppresent the list of files commited
+     */
+    public String getFiles(){
+        String result = "";
+
+        for(String name: name_files){
+            result += name + " ";
+        }
+
+        return result;
+    }
+
+    /**
      * Update the status to prepare the commit to been pushed to the remote repository
      * @return true if is ready, false otherwise
      */
@@ -74,10 +101,5 @@ public class Commit implements Serializable{
                 return true;
         }
         return false;
-    }
-
-    @Override
-    public String toString(){
-        return "[Message " + this.message + " Date " + this.date + "]";
     }
 }
