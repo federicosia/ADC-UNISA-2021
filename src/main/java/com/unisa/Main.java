@@ -8,7 +8,7 @@ import java.util.List;
 import com.unisa.git.GitProtocol;
 import com.unisa.git.GitProtocolImpl;
 import com.unisa.git.MessageListener;
-import com.unisa.git.GitStorage;
+import com.unisa.git.storage.DHTStorage;
 
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
@@ -45,7 +45,7 @@ public class Main
         TextTerminal terminal = textIO.getTextTerminal();
         int id = textIO.newIntInputReader().read("Insert peer ID: ");
         try {
-            GitProtocol git = new GitProtocolImpl(new GitStorage(id, "127.0.0.1"), new MessageListenerImpl(id));
+            GitProtocol git = new GitProtocolImpl(new DHTStorage(id, "127.0.0.1"), new MessageListenerImpl(id));
             terminal.print(help());
             while(true){
                 String input = textIO.newStringInputReader().read("git");

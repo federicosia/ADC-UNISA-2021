@@ -1,4 +1,4 @@
-package com.unisa.git;
+package com.unisa.git.repository;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -93,14 +93,18 @@ public class Repository implements Serializable{
     public boolean addFile(List<File> files) throws IOException, RepositoryException{
         for(File file : files){
             String fileName = file.getName();
+            Crate commitedCrate = this.files.get(fileName);
             Crate uncommittedCrate = this.untrackedFiles.get(fileName);
             File path_to_file = new File(this.getPath().concat("\\" + fileName));
+
+            //Check if the file exists, otherwise error
+            if(!path_to_file.exists())
+                throw new RepositoryException(fileName + "doesn't exists...");
             //if the key is not present than we simple add a new entry
             if(uncommittedCrate == null){
-                Crate currentCrate = this.files.get(fileName);
                 Crate newCrate = new Crate(path_to_file);
                 //Check if the file we want to commited was already committed!
-                if((currentCrate != null) && currentCrate.equals(newCrate))
+                if((commitedCrate != null) && commitedCrate.equals(newCrate))
                     throw new RepositoryException(fileName + " was already committed...");
 
                 //Check if the file is a directory, recursively add all files, otherwise is a file
@@ -216,6 +220,16 @@ public class Repository implements Serializable{
         }
         System.out.println(commits.size());
         return result;
+    }
+
+    @Override
+    public boolean equals(Object object){
+        if(object instanceof Repository){
+            Repository repo = (Repository) object;
+            if(this.id.equals(repo.id))
+                return true;
+        }
+        return false;
     }
 
     /**

@@ -2,28 +2,38 @@ package com.unisa.git;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import com.unisa.git.exceptions.RepositoryException;
+import com.unisa.git.repository.Repository;
+import com.unisa.git.storage.DHTStorage;
+import com.unisa.git.storage.GitStorage;
 
 public class GitProtocolImpl implements GitProtocol{
-    private GitStorage storage;
-    private Repository localRepo;
+    private DHTStorage remoteStorage;
+    private GitStorage localStorage;
 
-    public GitProtocolImpl(GitStorage storage, MessageListener listener) throws IOException{
-        this.storage = storage;
-        this.storage.objectReply(listener);
+    public GitProtocolImpl(DHTStorage storage, MessageListener listener) throws IOException{
+        this.remoteStorage = storage;
+        this.localStorage = new GitStorage();
+        this.remoteStorage.objectReply(listener);
     }
 
     @Override
     public boolean createRepository(String _repo_name, File _directory) {
         try{
-            if((localRepo == null) && _directory.isDirectory()){
-                localRepo = new Repository(_repo_name, _directory);
-                return true;
+            if(_directory.isDirectory()){
+                Repository result = localStorage.get(_repo_name);
+                if(result == null){
+                    //init new repository
+                    Repository repo = new Repository(_repo_name, _directory);
+                    localStorage.put(_repo_name, repo);
+                    return true;
+                }
             }
-            else 
-                return false;
+            return false;
         } catch(IOException e){
             e.printStackTrace();
             return false;
@@ -33,7 +43,8 @@ public class GitProtocolImpl implements GitProtocol{
     @Override
     public boolean addFilesToRepository(String _repo_name, List<File> files) {
         try {
-            if(localRepo != null && localRepo.getName().equals(_repo_name))
+            Repository localRepo = localStorage.get(_repo_name);
+            if(localRepo != null)
                 return localRepo.addFile(files);
             else 
                 return false;
@@ -46,7 +57,8 @@ public class GitProtocolImpl implements GitProtocol{
     @Override
     public boolean commit(String _repo_name, String _message) {
         try{
-            if(localRepo != null && localRepo.getName().equals(_repo_name))
+            Repository localRepo = localStorage.get(_repo_name);
+            if(localRepo != null)
                 return localRepo.addCommit(_repo_name, _message);
             else
                 return false;
@@ -59,16 +71,17 @@ public class GitProtocolImpl implements GitProtocol{
     @Override
     public String push(String _repo_name) {
         try {
-            Repository remoteRepo = storage.get(_repo_name);
+            Repository remoteRepo = remoteStorage.get(_repo_name);
+            Repository localRepo = localStorage.get(_repo_name);
             //Can't push without a local repository...
             if(localRepo != null){
-                //check if remote repository exists, then check if are different
-                if((remoteRepo != null) && remoteRepo.getName().equals(localRepo.getName())){
+                //check if remote repository exists
+                if((remoteRepo != null)){
                     //if true then we can push to remote
                     if(localRepo.checkLastCommit(remoteRepo)){
                         //Check if the are commits to push, otherwise local and remote are equals
                         if(localRepo.checkBeforePush()){
-                            if(storage.put(localRepo.getName(), localRepo))
+                            if(remoteStorage.put(localRepo.getName(), localRepo))
                                 return "Pushed all files successfully!\n";
                             else
                                 return "Push to the remote repository failed...\n";
@@ -80,14 +93,14 @@ public class GitProtocolImpl implements GitProtocol{
                 }
                 //Just push and check if there are commits to push
                 else {
-                    if(localRepo.checkBeforePush() && storage.put(localRepo.getName(), localRepo))
+                    if(localRepo.checkBeforePush() && remoteStorage.put(localRepo.getName(), localRepo))
                         return "Created new remote repository, pushed all files successfully!\n";
                     else
                         return "Creation of new remote repository and push failed...\n";
                 }
             }
             else return "You should create a local repository first...\n";
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return "Something went wrong...\n";
         }
@@ -96,10 +109,11 @@ public class GitProtocolImpl implements GitProtocol{
     @Override
     public String pull(String _repo_name) {
         try {
-            Repository remoteRepo = storage.get(_repo_name);
+            Repository remoteRepo = remoteStorage.get(_repo_name);
+            Repository localRepo = localStorage.get(_repo_name);
             //check if remote and local repos exists, then check if are different
             if(remoteRepo != null){ 
-                if((localRepo != null) && localRepo.getName().equals(remoteRepo.getName())){
+                if((localRepo != null)){
                     if(!localRepo.checkLastCommit(remoteRepo)){
                         switch(localRepo.update(remoteRepo)){
                             case 0:
@@ -117,7 +131,7 @@ public class GitProtocolImpl implements GitProtocol{
                 else return "Create a local repository first...\n";
             } 
             else return "Remote repository missing...\n";
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return "Something went wrong...\n";
         }

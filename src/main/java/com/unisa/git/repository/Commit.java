@@ -1,4 +1,4 @@
-package com.unisa.git;
+package com.unisa.git.repository;
 
 import java.io.Serializable;
 import java.time.LocalDate;

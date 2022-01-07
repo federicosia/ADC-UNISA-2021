@@ -1,4 +1,4 @@
-package com.unisa.git;
+package com.unisa.git.repository;
 
 import java.io.File;
 import java.io.IOException;
