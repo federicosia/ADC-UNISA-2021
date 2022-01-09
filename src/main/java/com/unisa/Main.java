@@ -7,7 +7,6 @@ import java.util.List;
 
 import com.unisa.git.GitProtocol;
 import com.unisa.git.GitProtocolImpl;
-import com.unisa.git.MessageListener;
 import com.unisa.git.storage.DHTStorage;
 
 import org.beryx.textio.TextIO;
@@ -18,34 +17,19 @@ public class Main
 {
     private static final String CREATE = "create";
     private static final String ADD = "add";
+    private static final String REMOVE = "remove";
     private static final String COMMIT = "commit";
     private static final String PUSH = "push";
     private static final String PULL = "pull";
     private static final String HELP = "help";
     private static final String EXIT = "exit";
+    private static final String STATUS = "status";
    public static void main( String[] args ) {
-       
-        class MessageListenerImpl implements MessageListener{
-            private int peerid;
-
-            public MessageListenerImpl(int peerid){
-                this.peerid = peerid;
-            }
-
-            @Override
-            public Object parseMessage(Object obj) {
-                TextIO textIO = TextIoFactory.getTextIO();
-                TextTerminal terminal = textIO.getTextTerminal();
-                terminal.printf("\n"+peerid+"] (Direct Message Received) "+obj+"\n\n");
-                return "Success";
-            }
-            
-        }
         TextIO textIO = TextIoFactory.getTextIO();
         TextTerminal terminal = textIO.getTextTerminal();
         int id = textIO.newIntInputReader().read("Insert peer ID: ");
         try {
-            GitProtocol git = new GitProtocolImpl(new DHTStorage(id, "127.0.0.1"), new MessageListenerImpl(id));
+            GitProtocol git = new GitProtocolImpl(new DHTStorage(id, "127.0.0.1"));
             terminal.print(help());
             while(true){
                 String input = textIO.newStringInputReader().read("git");
@@ -109,6 +93,12 @@ public class Main
                             terminal.println(git.pull(splitInput[1]));
                         }
                         break;
+                    case STATUS:
+                        if(splitInput.length != 2)
+                            terminal.print(tip(splitInput[0]));
+                        else {
+                            terminal.println(git.status(splitInput[1]));
+                        }
                     case HELP:
                         terminal.print(help());
                         break;
@@ -135,14 +125,18 @@ public class Main
         return "\nCommands:\n" +
                 "\tcreate\tallows you the creation of a local repository.\n" +
                 "\t\tSyntax: git create {0} {1}\n\t\targs: {0} repository name, {1} directory name.\n\n" +
-                "\tadd\tallows you to add a file in a local repository.\n" +
+                "\tadd\tallows you to add one or multiple files from the local repository.\n" +
                 "\t\tSyntax: git add {0} {1} || [list]\n\t\targs: {0} repository name, {1} file name or directory, [list] file names separeted by a space\n\n" +
+                "\tremove allows you to remove one or multiple files from the local repository\n" +
+                "\t\tSyntax: git remove {0} {1} || [list]\n\t\targs: {0} repository name, {1} file name or directory, [list] file names seprated by a space\n\n" +
                 "\tcommit\tallows you the creation of commit in the local repository.\n" +
                 "\t\tSyntax: git commit {0}, {1}\n\t\targs: {0} repository name, {1} message\n\n" +
                 "\tpush\tallows you to push files to the remote repository.\n" +
                 "\t\tSyntax: git push {0}\n\t\targs: {0} repository name.\n\n" +
                 "\tpull\tallows you to obtain files in the remote repository and store them in the local repository.\n" +
                 "\t\tSyntax: git pull {0}\n\t\targs: {0} repository name.\n\n" +
+                "\tstatus\tallows you to check the status of the local repository, it shows the name of files that are staged, unstaged and untracked" +
+                "\t\tSyntax: git status {0}\n\t\targs: {0} repository name." +
                 "\thelp\treprint commands list\n\n" +
                 "\texit\tclose git.\n\n";
     }
@@ -158,14 +152,18 @@ public class Main
                 return "\n\tSyntax error: git create {0} {1}\n\t\targs: {0} repository name, {1} directory name.\n\n";
             case ADD:
                 return "Syntax error:  git add {0} {1} || [list]\n\t\targs: {0} repository name," + 
-                        " {1} file name or directory," +
-                        " [list] file names separeted by a space\n\n";
+                        " {1} file name or directory, [list] file names separeted by a space\n\n";
+            case REMOVE:
+                return "\t\tSyntax: git remove {0} {1} || [list]\n\t\targs: {0} repository name, " +
+                        " {1} file name or directory, [list] file names seprated by a space\n\n";
             case COMMIT:
                 return "Syntax error: git commit {0}, {1}\n\t\targs: {0} repository name, {1} message\n\n";
             case PUSH:
                 return "Syntax error: git push {0}\n\t\targs: {0} repository name.\n\n";
             case PULL:
                 return "Syntax error: git pull {0}\n\t\targs: {0} repository name.\n\n";
+            case STATUS:
+                return "Syntax error: git status {0}\n\t\targs: {0} repository name.\n\n";
             default:
                 return "\nCRITICAL ERROR: Shouldn't happen...\n";
         }

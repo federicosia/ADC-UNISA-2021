@@ -13,10 +13,9 @@ public class GitProtocolImpl implements GitProtocol{
     private DHTStorage remoteStorage;
     private GitStorage localStorage;
 
-    public GitProtocolImpl(DHTStorage storage, MessageListener listener) throws IOException{
+    public GitProtocolImpl(DHTStorage storage) throws IOException{
         this.remoteStorage = storage;
         this.localStorage = new GitStorage();
-        this.remoteStorage.objectReply(listener);
     }
 
     @Override
@@ -50,6 +49,19 @@ public class GitProtocolImpl implements GitProtocol{
             System.err.println(e.getMessage());
             return false;
         }        
+    }
+
+    public boolean removeFilesToRepository(String _repo_name, List<File> files){
+        try {
+            Repository localRepo = localStorage.get(_repo_name);
+            if(localRepo != null)
+                return localRepo.removeFile(files);
+            else 
+                return false;
+        } catch (RepositoryException e) {
+            System.err.println(e.getMessage());
+            return false;
+        }
     }
 
     @Override
@@ -135,4 +147,31 @@ public class GitProtocolImpl implements GitProtocol{
         }
     }
     
+    /**
+     * Returns the status of the local repository, the status shows the filename of files
+     * that are staged, unstaged and untracked.
+     * @param _repo_name name of the local repository
+     * @return a String object containing informations
+     */
+    public String status(String _repo_name){
+        try{
+            Repository localRepo = localStorage.get(_repo_name);
+            if(localRepo != null){
+                List<String> stagedFilenames = localRepo.getStagedFiles();
+                List<String> unstagedFilenames = localRepo.getUnstagedFiles();
+                List<String> untrackedFilenames = localRepo.getUntrackedFiles();
+                String result = "Status of the local repository " + localRepo.getName() + ":\n";
+                result += "Changes to be committed:\n\n" + String.join(" ", stagedFilenames) + "\n\n";
+                result += "Changes not staged for commit:\n\n" + String.join(" ", unstagedFilenames) + "\n\n";
+                result += "Untracked files:\n\n" + String.join(" ", untrackedFilenames) + "\n\n";
+
+                return result;
+            }
+            else
+                return "Local repository missing...";
+        } catch(IOException e) {
+            e.printStackTrace();
+            return "Something went wrong...";
+        }
+    }
 }

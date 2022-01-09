@@ -81,6 +81,14 @@ public class Commit implements Serializable{
     }
 
     /**
+     * Returns the status of the commit
+     * @return true if pushed, false otherwise
+     */
+    public boolean getPushed(){
+        return pushed;
+    }
+
+    /**
      * Update the status to prepare the commit to been pushed to the remote repository
      * @return true if is ready, false otherwise
      */

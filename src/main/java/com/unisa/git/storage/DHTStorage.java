@@ -3,7 +3,6 @@ package com.unisa.git.storage;
 import java.io.IOException;
 import java.net.InetAddress;
 
-import com.unisa.git.MessageListener;
 import com.unisa.git.repository.Repository;
 
 import net.tomp2p.dht.FutureGet;
@@ -12,8 +11,6 @@ import net.tomp2p.dht.PeerDHT;
 import net.tomp2p.futures.FutureBootstrap;
 import net.tomp2p.p2p.PeerBuilder;
 import net.tomp2p.peers.Number160;
-import net.tomp2p.peers.PeerAddress;
-import net.tomp2p.rpc.ObjectDataReply;
 import net.tomp2p.storage.Data;
 
 public class DHTStorage implements Storage{
@@ -52,14 +49,5 @@ public class DHTStorage implements Storage{
             e.printStackTrace();
             return null;
         }
-    }
-
-    public void objectReply(final MessageListener listener){
-        dht.peer().objectDataReply(new ObjectDataReply() {
-            @Override
-            public Object reply(PeerAddress sender, Object request) throws Exception {
-                return listener.parseMessage(request);
-            }
-        });
     }
 }

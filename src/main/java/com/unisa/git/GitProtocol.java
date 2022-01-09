@@ -19,6 +19,15 @@ public interface GitProtocol {
 	 * @return true if it is correctly added, false otherwise.
 	 */
 	public boolean addFilesToRepository(String _repo_name, List<File> files);
+
+	/**
+	 * Removes a list of File to the given local repository
+	 * @param _repo_name a String, the name of the repository.
+	 * @param files a list of Files to be removed to the repository.
+	 * @return true if it is correctly removed, false otherwise.
+	 */
+	public boolean removeFilesToRepository(String _repo_name, List<File> files);
+
 	/**
 	 * Apply the changing to the files in  the local repository.
 	 * @param _repo_name a String, the name of the repository.
@@ -40,4 +49,11 @@ public interface GitProtocol {
 	 * @return a String, operation message.
 	 */
 	public String pull(String _repo_name);
+
+	/**
+	 * 
+	 * @param _repo_name _repo_name a String, the name of the repository
+	 * @return a String, operation message.
+	 */
+	public String status(String _repo_name);
 }
