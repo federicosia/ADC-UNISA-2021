@@ -48,9 +48,8 @@ public class Repository implements Serializable{
     }
 
     /**
-     * Returns the id of the repository, it's generated again every time this method is called.
-     * The id is produced from the files of the local repository.
-     * @return id the new id generated
+     * Returns the id of the repository. The id is generated every time this method is called.
+     * @return String reppresenting the id
      * @throws IOException problems when reading from the file
      */
     public String generateId() throws IOException {
