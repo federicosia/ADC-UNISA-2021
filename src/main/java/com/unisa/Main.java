@@ -99,6 +99,7 @@ public class Main
                         else {
                             terminal.println(git.status(splitInput[1]));
                         }
+                        break;
                     case HELP:
                         terminal.print(help());
                         break;
@@ -135,8 +136,8 @@ public class Main
                 "\t\tSyntax: git push {0}\n\t\targs: {0} repository name.\n\n" +
                 "\tpull\tallows you to obtain files in the remote repository and store them in the local repository.\n" +
                 "\t\tSyntax: git pull {0}\n\t\targs: {0} repository name.\n\n" +
-                "\tstatus\tallows you to check the status of the local repository, it shows the name of files that are staged, unstaged and untracked" +
-                "\t\tSyntax: git status {0}\n\t\targs: {0} repository name." +
+                "\tstatus\tallows you to check the status of the local repository, it shows the name of files that are staged,\n \t\tunstaged and untracked\n" +
+                "\t\tSyntax: git status {0}\n\t\targs: {0} repository name.\n\n" +
                 "\thelp\treprint commands list\n\n" +
                 "\texit\tclose git.\n\n";
     }

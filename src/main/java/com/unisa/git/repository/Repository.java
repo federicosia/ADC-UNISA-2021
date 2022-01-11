@@ -23,7 +23,7 @@ import com.unisa.git.exceptions.RepositoryException;
  */
 public class Repository implements Serializable{
     private String name;
-    private File path;
+    private Path path;
     private HashMap<String, Crate> trackedFiles;
     private HashMap<String, Crate> stagedFiles;
     private ArrayList<Commit> commits;
@@ -31,12 +31,12 @@ public class Repository implements Serializable{
 
     public Repository(String name, File directory) throws IOException{
         this.name = name;
-        this.path = new File(directory.getAbsolutePath().concat("\\"+name));
+        this.path = Paths.get(directory.getAbsolutePath(), name);
         this.trackedFiles = new HashMap<>();
         this.stagedFiles = new HashMap<>();
         this.commits = new ArrayList<>();
         this.id = "null";
-        this.path.mkdir();
+        this.path.toFile().mkdir();
     }
 
     public String getName(){
@@ -44,7 +44,7 @@ public class Repository implements Serializable{
     }
 
     public String getPath(){
-        return path.getAbsolutePath();
+        return path.toString();
     }
 
     /**
@@ -91,32 +91,32 @@ public class Repository implements Serializable{
             String filename = file.getName();
             Crate trackedCrate = this.trackedFiles.get(filename);
             Crate stagedCrate = this.stagedFiles.get(filename);
-            File path_to_file = new File(this.getPath().concat("\\" + filename));
+            Path path_to_file = Paths.get(this.getPath(), filename);
 
             //Check if the file exists, otherwise error
-            if(!path_to_file.exists())
+            if(!path_to_file.toFile().exists())
                 throw new RepositoryException(filename + " doesn't exists...");
             //if the key is not present than we simple add a new entry
             if(stagedCrate == null){
-                Crate newCrate = new Crate(path_to_file);
+                Crate newCrate = new Crate(path_to_file.toFile());
                 //Check if the file we want to commited was already committed!
                 if((trackedCrate != null) && trackedCrate.equals(newCrate))
                     throw new RepositoryException(filename + " was already committed...");
 
                 //Check if the file is a directory, recursively add all files, otherwise is a file
-                if(path_to_file.isDirectory())
-                    this.addFile(Arrays.asList(path_to_file.listFiles()));
+                if(path_to_file.toFile().isDirectory())
+                    this.addFile(Arrays.asList(path_to_file.toFile().listFiles()));
                 
                 this.stagedFiles.put(filename, newCrate);
             } 
             //The key is already present that we check if the content of the file is the same,
             //if the content is different that we replace the value associated at the key, otherwise already added.
             else {
-                Crate newCrate = new Crate(path_to_file);
+                Crate newCrate = new Crate(path_to_file.toFile());
                 if(!stagedCrate.equals(newCrate)){
                     //Check if the file is a directory, recursively add all files, otherwise is a file
-                    if(path_to_file.isDirectory())
-                        this.addFile(Arrays.asList(path_to_file.listFiles()));
+                    if(path_to_file.toFile().isDirectory())
+                        this.addFile(Arrays.asList(path_to_file.toFile().listFiles()));
 
                     this.stagedFiles.put(filename, newCrate);
                 }
@@ -129,9 +129,9 @@ public class Repository implements Serializable{
     public boolean removeFile(List<File> files) throws RepositoryException{
         for(File file: files){
             String filename = file.getName();
-            File path_to_file = new File(this.getPath().concat("\\" + filename));
+            Path path_to_file = Paths.get(this.getPath(), filename);
 
-            if(path_to_file.exists()){
+            if(path_to_file.toFile().exists()){
                 if((trackedFiles.remove(filename) != null) || (stagedFiles.remove(filename) != null))
                     return true;
                 else 
@@ -246,9 +246,8 @@ public class Repository implements Serializable{
         Iterator<Entry<String, Crate>> it = this.trackedFiles.entrySet().iterator();
         while(it.hasNext()) {
             Entry<String, Crate> entry = it.next();
-            Path path = Paths.get(this.getPath().concat("\\" + entry.getKey()));
+            Path path = Paths.get(this.getPath(), entry.getKey());
             File file = new File(path.toString());
-            System.out.println(path.toString());
             if(file.exists()){
                 if(!Arrays.equals(Files.readAllBytes(path), entry.getValue().getContent()))
                     names.add(entry.getKey());
@@ -265,7 +264,7 @@ public class Repository implements Serializable{
      */
     public List<String> getUntrackedFiles(){
         List<String> names = new ArrayList<String>();
-        File[] files = this.path.listFiles();
+        File[] files = this.path.toFile().listFiles();
         String filename = "";
 
         for(int i = 0; i < files.length; i++){
@@ -296,23 +295,23 @@ public class Repository implements Serializable{
      */
     private void materialize() throws IOException{
         for(Crate crate: this.trackedFiles.values()){
-            Path path = Paths.get(this.getPath().concat("\\" + crate.getName()));
+            Path path = Paths.get(this.getPath(), crate.getName());
             File file = new File(path.toString());
             
             //If is present in the directory a file untracked, with the same name and different
             //content, than we have a conflict. The file pulled from remote will be created with different name.
             if(file.exists() && !Arrays.equals(Files.readAllBytes(path), crate.getContent()))
-                path = Paths.get(this.getPath().concat("\\" + generateNewFilename(crate.getName())));
+                path = Paths.get(this.getPath(), generateNewFilename(crate.getName()));
             Files.write(path, crate.getContent());
         }
         for(Crate crate: this.stagedFiles.values()){
-            Path path = Paths.get(this.getPath().concat("\\" + crate.getName()));
+            Path path = Paths.get(this.getPath(), crate.getName());
             File file = new File(path.toString());
             
             //If is present in the directory a file untracked, with the same name and different
             //content, than we have a conflict. The file pulled from remote will be created with different name.
             if(file.exists() && !Arrays.equals(Files.readAllBytes(path), crate.getContent()))
-                path = Paths.get(this.getPath().concat("\\" + generateNewFilename(crate.getName())));
+                path = Paths.get(this.getPath(), generateNewFilename(crate.getName()));
             Files.write(path, crate.getContent());
         }
     }
