@@ -59,13 +59,25 @@ public class Main
                             terminal.printf(tip(splitInput[0]));
                         else {
                             List<File> files = new ArrayList<>();
-                            for(int i = 2; i < splitInput.length; i++){
+                            for(int i = 2; i < splitInput.length; i++)
                                 files.add(new File(splitInput[i]));
-                                terminal.print("File: " + splitInput[i] + "\n");
-                            }
+                            
                             boolean result = git.addFilesToRepository(splitInput[1], files);
                             if(result)
                                 terminal.println("Added files successfully!\n");
+                        }
+                        break;
+                    case REMOVE:
+                        if(splitInput.length < 3)
+                            terminal.printf(tip(splitInput[0]));
+                        else {
+                            List<File> files = new ArrayList<>();
+                            for(int i = 2; i < splitInput.length; i++)
+                                files.add(new File(splitInput[i]));
+        
+                            boolean result = git.removeFilesToRepository(splitInput[1], files);
+                            if(result)
+                                terminal.println("Removed files successfully!\n");
                         }
                         break;
                     case COMMIT:
