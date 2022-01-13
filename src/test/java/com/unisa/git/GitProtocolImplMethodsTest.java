@@ -17,8 +17,8 @@ import java.util.List;
 import com.unisa.git.storage.DHTStorage;
 
 @TestInstance(Lifecycle.PER_CLASS)
-public class GitProtocolImplTest {
-    private static GitProtocol peer1, peer2, peer3, peer4;
+public class GitProtocolImplMethodsTest {
+    private static GitProtocol peer1, peer2;
     private static final String repo_name1 = "test1";
     private static final String repo_name2 = "test2";
     private static final String repo_name3 = "test3";
@@ -37,11 +37,9 @@ public class GitProtocolImplTest {
     private static final String esp3 = "prova3.txt";
     private static final String esp4 = "prova4.txt";
 
-    public GitProtocolImplTest() throws IOException{
+    public GitProtocolImplMethodsTest() throws IOException{
         peer1 = new GitProtocolImpl(new DHTStorage(0, "127.0.0.1"));
         peer2 = new GitProtocolImpl(new DHTStorage(1, "127.0.0.1"));
-        peer3 = new GitProtocolImpl(new DHTStorage(2, "127.0.0.1"));
-        peer4 = new GitProtocolImpl(new DHTStorage(3, "127.0.0.1"));
     }
 
     @Test
