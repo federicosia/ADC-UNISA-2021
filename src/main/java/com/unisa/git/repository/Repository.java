@@ -17,6 +17,7 @@ import java.util.UUID;
 import java.util.Map.Entry;
 
 import com.unisa.git.exceptions.RepositoryException;
+
 /**
  * The repository of an user, the Repository class allows to manage, create and 
  * control the workflow of the repositories. 
@@ -129,17 +130,10 @@ public class Repository implements Serializable{
     public boolean removeFile(List<File> files) throws RepositoryException{
         for(File file: files){
             String filename = file.getName();
-            Path path_to_file = Paths.get(this.getPath(), filename);
-
-            if(path_to_file.toFile().exists()){
-                if((trackedFiles.remove(filename) != null) || (stagedFiles.remove(filename) != null)){
-                    this.deleteFiles(Paths.get(this.getPath(), filename).toFile());
-                }  
-                else 
-                    throw new RepositoryException(filename + " isn't tracked by Git...");
-            }
+            if(trackedFiles.get(filename) != null)
+                stagedFiles.put(filename, null);
             else 
-                throw new RepositoryException(filename + " doesn't exists...");
+                throw new RepositoryException(filename + " isn't tracked by Git...");
         }
         return true;
     }
@@ -156,9 +150,16 @@ public class Repository implements Serializable{
             
             commits.add(commit);
             for(Map.Entry<String, Crate> entry: stagedFiles.entrySet()){
+                String filename = entry.getKey();
                 Crate crate = entry.getValue();
-                trackedFiles.put(crate.getName(), crate);
-                commit.addFile(crate.getName());
+                //value != null means add, value == null means remove!
+                if(crate != null)
+                    trackedFiles.put(crate.getName(), crate);
+                else {
+                    this.deleteFiles(Paths.get(this.getPath(), filename).toFile());
+                    trackedFiles.remove(filename);
+                }
+                commit.addFile(filename);
             }
             stagedFiles.clear();
             this.id = generateId();
@@ -195,9 +196,10 @@ public class Repository implements Serializable{
      */
     public int update(Repository remoteRepo) throws IOException{
         int result = 0;
-        for(String filename : remoteRepo.trackedFiles.keySet()){
+        for(Map.Entry<String, Crate> entry : remoteRepo.trackedFiles.entrySet()){
+            String filename = entry.getKey();
+            Crate remoteCrate = entry.getValue();
             Crate localCrate = this.trackedFiles.get(filename);
-            Crate remoteCrate = remoteRepo.trackedFiles.get(filename);
 
             if(this.trackedFiles.containsKey(filename)){
                 //also check if the content is different, if different the new file will not be tracked
@@ -319,7 +321,10 @@ public class Repository implements Serializable{
      */
     private String generateNewFilename(String oldFilename){
         int lastdotIndex = oldFilename.indexOf(".");
-        return oldFilename.substring(0, lastdotIndex) + "_(1)" + oldFilename.substring(lastdotIndex);
+        if(lastdotIndex > -1)
+            return oldFilename.substring(0, lastdotIndex) + "_(1)" + oldFilename.substring(lastdotIndex);
+        else
+            return oldFilename + "_(1)";
     }
 
     /**
