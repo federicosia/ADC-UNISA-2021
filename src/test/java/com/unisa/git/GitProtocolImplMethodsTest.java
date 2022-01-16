@@ -18,13 +18,18 @@ import com.unisa.git.storage.DHTStorage;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class GitProtocolImplMethodsTest {
+    //Peers
     private static GitProtocol peer1, peer2;
+
+    //repo's names
     private static final String repo_name1 = "test1";
     private static final String repo_name2 = "test2";
     private static final String repo_name3 = "test3";
     private static final String repo_name4 = "test4";
     private static final String repo_name5 = "test5";
     private static final String repo_name6 = "test6";
+
+    //repo's paths
     private static final String path_to_repo1 = Paths.get(System.getProperty("user.dir"), repo_name1).toString();
     private static final String path_to_repo2 = Paths.get(System.getProperty("user.dir"), repo_name2).toString();
     private static final String path_to_repo3 = Paths.get(System.getProperty("user.dir"), repo_name3).toString();
@@ -32,6 +37,8 @@ public class GitProtocolImplMethodsTest {
     private static final String path_to_repo5 = Paths.get(System.getProperty("user.dir"), repo_name5).toString();
     private static final String path_to_repo61 = Paths.get(System.getProperty("user.dir"), repo_name6).toString();
     private static final String path_to_repo62 = Paths.get(System.getProperty("user.dir"), "supp", repo_name6).toString();
+    
+    //files
     private static final String esp1 = "prova1.txt";
     private static final String esp2 = "prova2.txt";
     private static final String esp3 = "prova3.txt";

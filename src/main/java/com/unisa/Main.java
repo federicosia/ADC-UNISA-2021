@@ -12,6 +12,9 @@ import com.unisa.git.storage.DHTStorage;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
 import org.beryx.textio.TextTerminal;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
 
 public class Main 
 {
@@ -24,12 +27,23 @@ public class Main
     private static final String HELP = "help";
     private static final String EXIT = "exit";
     private static final String STATUS = "status";
+
+    @Option(name="-m", aliases="--masterip", usage="the master peer ip address", required=true)
+    private static String master;
+
+    @Option(name="-id", aliases="--identifierpeer", usage="the unique identifier for this peer", required=true)
+    private static int id;
+
    public static void main( String[] args ) {
+        Main main = new Main();
+        final CmdLineParser parser= new CmdLineParser(main);
         TextIO textIO = TextIoFactory.getTextIO();
-        TextTerminal terminal = textIO.getTextTerminal();
-        int id = textIO.newIntInputReader().read("Insert peer ID: ");
+        TextTerminal terminal = textIO.getTextTerminal();        
+
         try {
-            GitProtocol git = new GitProtocolImpl(new DHTStorage(id, "127.0.0.1"));
+            parser.parseArgument(args);
+            GitProtocol git = new GitProtocolImpl(new DHTStorage(id, master));
+            terminal.print("\nPeer with id: " + id + " on node: " + master + "\n");
             terminal.print(help());
             while(true){
                 String input = textIO.newStringInputReader().read("git");
@@ -125,7 +139,10 @@ public class Main
                 }
             }
         } catch (IOException e) {
-            terminal.printf("Git protocol error...");
+            System.err.println("ERROR: Git protocol error...");
+            e.printStackTrace();
+        } catch (CmdLineException e) {
+            System.err.println("ERROR: Unable to parse cmd options: ");
             e.printStackTrace();
         }
     }
