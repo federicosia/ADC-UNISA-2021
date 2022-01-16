@@ -121,7 +121,7 @@ public class GitProtocolImplUseCaseTest {
 
         //commit and push repo1 from peer1
         assertTrue(peer1.commit(repo1, "ciao"));
-        assertEquals(peer1.push(repo1), pushCreateRepo); 
+        assertEquals(pushCreateRepo, peer1.push(repo1)); 
 
         //add from peer2 on repo1
         Path path1a = Paths.get(pathRepo2, repo1, "esp1");
@@ -144,7 +144,7 @@ public class GitProtocolImplUseCaseTest {
         assertTrue(peer3.addFilesToRepository(repo1, filesRepo3));
 
         //pull repo1 from peer4
-        assertEquals(peer4.pull(repo1), pullNoConflicts);
+        assertEquals(pullNoConflicts, peer4.pull(repo1));
 
         //commits repo1 from peer2 and peer3
         assertTrue(peer2.commit(repo1, "bho"));
@@ -154,12 +154,12 @@ public class GitProtocolImplUseCaseTest {
         assertTrue(peer3.commit(repo3, "as"));
 
         //peer2 create repo2 on remote
-        assertEquals(peer2.push(repo2), pushCreateRepo);
+        assertEquals(pushCreateRepo, peer2.push(repo2));
 
         //peer2 can't push repo1, should pull first
-        assertEquals(peer2.push(repo1), pushOutOfDate);
+        assertEquals(pushOutOfDate, peer2.push(repo1));
         //peer2 pulls, but there are conflicts
-        assertEquals(peer2.pull(repo1), pullYesConflicts);
+        assertEquals(pullYesConflicts, peer2.pull(repo1));
 
         //peer2 removes old files in conflict
         Path path1Remove = Paths.get(pathRepo2, repo1, "esp1_(1)");
@@ -168,12 +168,12 @@ public class GitProtocolImplUseCaseTest {
         filesRepo2.add(path1Remove.toFile());
         filesRepo2.add(path2Remove.toFile());
         assertTrue(peer2.removeFilesToRepository(repo1, filesRepo2));
-        //peer2 now can push
-        assertEquals(peer2.push(repo1), pushOk);
+        assertTrue(peer2.commit(repo1, "rimozione"));
+        assertEquals(pushOk, peer2.push(repo1));
 
         //peer4 commit and push repo4
         assertTrue(peer4.commit(repo4, "ddd"));
-        assertEquals(peer4.push(repo4), pushCreateRepo);
+        assertEquals(pushCreateRepo, peer4.push(repo4));
 
         //peer4 add some files in repo1
         filesRepo4.clear();
@@ -191,21 +191,22 @@ public class GitProtocolImplUseCaseTest {
         assertFalse(peer4.addFilesToRepository(repo1, filesRepo4.subList(0, 1)));
 
         assertTrue(peer4.commit(repo1, "asda"));
-        assertEquals(peer4.push(repo1), pushOutOfDate);
-        assertEquals(peer4.pull(repo1), pullNoConflicts);
+        assertEquals(pushOutOfDate, peer4.push(repo1));
+        assertEquals(pullYesConflicts, peer4.pull(repo1));
         //just for a check
-        assertEquals(peer4.pull(repo1), pullOk);
+        assertEquals(pullOk, peer4.pull(repo1));
 
         //peer3 pull but with conflicts, remove file at path32 and push repo1
-        assertEquals(peer3.pull(repo1), pullYesConflicts);
+        assertEquals(pullYesConflicts, peer3.pull(repo1));
         assertTrue(peer3.removeFilesToRepository(repo1, filesRepo3.subList(1, 2)));
-        assertEquals(peer3.push(repo1), pushOk);
+        assertTrue(peer3.commit(repo1, "rim"));
+        assertEquals(pushOk, peer3.push(repo1));
         
         //cleanse
-        /*deleteFiles(new File(pathRepo1));
+        deleteFiles(new File(pathRepo1));
         deleteFiles(new File(pathRepo2));
         deleteFiles(new File(pathRepo3));
-        deleteFiles(new File(pathRepo4));*/
+        deleteFiles(new File(pathRepo4));
     }
 
     private void deleteFiles(File file){

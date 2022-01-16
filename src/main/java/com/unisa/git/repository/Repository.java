@@ -204,7 +204,7 @@ public class Repository implements Serializable{
             if(this.trackedFiles.containsKey(filename)){
                 //also check if the content is different, if different the new file will not be tracked
                 //the developer should first resolve the conflict than track the file with git add.
-                if(!Arrays.equals(localCrate.getContent(), remoteCrate.getContent())){
+                if(!localCrate.equals(remoteCrate)){
                     this.trackedFiles.put(generateNewFilename(filename), remoteCrate);
                     result = 2;
                 }
@@ -213,7 +213,8 @@ public class Repository implements Serializable{
             //else just add it in the repository
             else{
                 this.trackedFiles.put(filename, remoteCrate);
-                result = 1;
+                if(result != 2)
+                    result = 1;
             }
         }
         materialize();
@@ -221,7 +222,7 @@ public class Repository implements Serializable{
         //update commits
         for(Commit commit: remoteRepo.commits){
             if(!this.commits.contains(commit))
-                this.commits.add(commit);
+                this.commits.add(0, commit);
         }
         return result;
     }
