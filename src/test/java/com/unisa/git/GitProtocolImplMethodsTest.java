@@ -98,6 +98,7 @@ public class GitProtocolImplMethodsTest {
         files.add(new File(path4.toString()));
 
         assertTrue(peer1.addFilesToRepository(repo_name3, files));
+        assertTrue(peer1.commit(repo_name3, "commit"));
         assertTrue(peer1.removeFilesToRepository(repo_name3, files));
         this.deleteFiles(new File(path_to_repo3));
     }
