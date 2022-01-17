@@ -159,10 +159,12 @@ public class GitProtocolImpl implements GitProtocol{
             if(localRepo != null){
                 List<String> stagedFilenames = localRepo.getStagedFiles();
                 List<String> unstagedFilenames = localRepo.getUnstagedFiles();
+                List<String> trackedFilenames = localRepo.getTrackedFiles();
                 List<String> untrackedFilenames = localRepo.getUntrackedFiles();
-                String result = "\n\nStatus of the local repository " + localRepo.getName() + ":\n";
+                String result = "\n\nStatus of the local repository " + localRepo.getName() + ":\n\n";
                 result += "Changes to be committed:\n\n" + String.join(" ", stagedFilenames) + "\n\n";
                 result += "Changes not staged for commit:\n\n" + String.join(" ", unstagedFilenames) + "\n\n";
+                result += "Tracked files:\n\n" + String.join(" ", trackedFilenames) + "\n\n";
                 result += "Untracked files:\n\n" + String.join(" ", untrackedFilenames) + "\n";
 
                 return result;

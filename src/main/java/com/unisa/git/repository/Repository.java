@@ -154,7 +154,7 @@ public class Repository implements Serializable{
                 Crate crate = entry.getValue();
                 //value != null means add, value == null means remove!
                 if(crate != null)
-                    trackedFiles.put(crate.getName(), crate);
+                    trackedFiles.put(filename, crate);
                 else {
                     this.deleteFiles(Paths.get(this.getPath(), filename).toFile());
                     trackedFiles.remove(filename);
@@ -250,13 +250,42 @@ public class Repository implements Serializable{
         Iterator<Entry<String, Crate>> it = this.trackedFiles.entrySet().iterator();
         while(it.hasNext()) {
             Entry<String, Crate> entry = it.next();
-            Path path = Paths.get(this.getPath(), entry.getKey());
+            String filename = entry.getKey();
+            Crate crateInTracked = entry.getValue();
+            Path path = Paths.get(this.getPath(), filename);
             File file = new File(path.toString());
+
             if(file.exists()){
-                if(!Arrays.equals(Files.readAllBytes(path), entry.getValue().getContent()))
-                    names.add(entry.getKey());
+                byte[] contentFileInFS = Files.readAllBytes(path);
+                Crate crateInStaged = this.stagedFiles.get(filename);
+                //The first check is needed because a file staged can be also unstaged,
+                //for example add of a file, then the file is modified, the filename will appear
+                //in staged and unstaged lists.
+                if(crateInStaged != null){
+                    if(!Arrays.equals(crateInStaged.getContent(), contentFileInFS)){
+                        names.add(filename);
+                    }
+                } else if(!Arrays.equals(crateInTracked.getContent(), contentFileInFS)){
+                    names.add(filename);
+                }
             }
-            else names.add(entry.getKey());
+        }
+
+        return names;
+    }
+
+    /**
+     * List of filenames tracked by Git.
+     * @return list type String with filenames of tracked files
+     * @throws IOException
+     */
+    public List<String> getTrackedFiles() throws IOException {
+        List<String> names = new ArrayList<String>();
+
+        Iterator<Entry<String, Crate>> it = this.trackedFiles.entrySet().iterator();
+        while(it.hasNext()) {
+            Entry<String, Crate> entry = it.next();
+            names.add(entry.getKey());
         }
 
         return names;
