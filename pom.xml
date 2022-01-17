@@ -34,10 +34,10 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-			<groupId>org.beryx</groupId>
-			<artifactId>text-io</artifactId>
-			<version>3.3.0</version>
-		</dependency>
+      <groupId>org.beryx</groupId>
+      <artifactId>text-io</artifactId>
+      <version>3.3.0</version>
+    </dependency>
     <dependency>
       <groupId>args4j</groupId>
       <artifactId>args4j</artifactId>
@@ -81,8 +81,8 @@
           </configuration>
           <executions>
             <execution>
-              <id>make-assembly</id> <!-- this is used for inheritance merges -->
-              <phase>package</phase> <!-- bind to the packaging phase -->
+              <id>make-assembly</id>
+              <phase>package</phase>
               <goals>
                 <goal>single</goal>
               </goals>
