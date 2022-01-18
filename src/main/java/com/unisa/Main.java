@@ -3,6 +3,7 @@ package com.unisa;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.unisa.git.GitProtocol;
@@ -95,10 +96,11 @@ public class Main
                         }
                         break;
                     case COMMIT:
-                        if(splitInput.length != 3)
+                        if(splitInput.length < 3)
                             terminal.print(tip(splitInput[0]));
                         else {
-                            boolean result = git.commit(splitInput[1], splitInput[2]);
+                            String message = String.join(" ", Arrays.copyOfRange(splitInput, 2, splitInput.length));
+                            boolean result = git.commit(splitInput[1], message);
                             if(result)
                                 terminal.println("Commit made successfully!\n");
                             else 
