@@ -103,10 +103,6 @@ public class Repository implements Serializable{
                 //Check if the file we want to commited was already committed!
                 if((trackedCrate != null) && trackedCrate.equals(newCrate))
                     throw new RepositoryException(filename + " was already committed...");
-
-                //Check if the file is a directory, recursively add all files, otherwise is a file
-                if(path_to_file.toFile().isDirectory())
-                    this.addFile(Arrays.asList(path_to_file.toFile().listFiles()));
                 
                 this.stagedFiles.put(filename, newCrate);
             } 
@@ -115,10 +111,7 @@ public class Repository implements Serializable{
             else {
                 Crate newCrate = new Crate(path_to_file.toFile());
                 if(!stagedCrate.equals(newCrate)){
-                    //Check if the file is a directory, recursively add all files, otherwise is a file
-                    if(path_to_file.toFile().isDirectory())
-                        this.addFile(Arrays.asList(path_to_file.toFile().listFiles()));
-
+                    
                     this.stagedFiles.put(filename, newCrate);
                 }
                 else throw new RepositoryException(filename + " already added...");
