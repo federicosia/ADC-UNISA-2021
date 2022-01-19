@@ -36,16 +36,12 @@ public class Crate implements Serializable{
     }
 
     /**
-     * Upgrade the content and the id of the crate.
-     * @throws IOException something went wrong...
-     * @return true if crate was update successfully, false otherwise
+     * Checks if the file represented by the Crate object is still present in the File System
+     * of the local repository.
+     * @return true if present, false otherwise.
      */
-    public boolean update() throws IOException{
-        if(!this.file.exists())
-            return false;
-        this.content = Files.readAllBytes(file.toPath());
-        this.id = UUID.nameUUIDFromBytes(this.content).toString();    
-        return true;
+    public boolean checkIfExists() {
+        return this.file.exists();
     }
 
     @Override

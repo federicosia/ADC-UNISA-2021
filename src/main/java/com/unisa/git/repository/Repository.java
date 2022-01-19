@@ -54,14 +54,14 @@ public class Repository implements Serializable{
      * @throws IOException problems when reading from the file
      */
     public String generateId() throws IOException {
-        //Read all bytes of all 
+        //Read all bytes
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         //Use iterator, otherwise concurrentModificationException is raised!
         Iterator<Entry<String, Crate>> it = this.trackedFiles.entrySet().iterator();
         while(it.hasNext()) {
             Entry<String, Crate> entry = it.next();
-            if(entry.getValue().update())
+            if(entry.getValue().checkIfExists())
                 outputStream.write(entry.getValue().getContent());
             else 
                 it.remove();
