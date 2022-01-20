@@ -51,8 +51,10 @@ public interface GitProtocol {
 	public String pull(String _repo_name);
 
 	/**
-	 * 
-	 * @param _repo_name _repo_name a String, the name of the repository
+	 * Shows the state of the local repository and the staging area. It shows
+	 * which changes have been staged, which haven't, and which files are tracked 
+	 * and aren't tracked by Git.
+	 * @param _repo_name a String, the name of the repository
 	 * @return a String, operation message.
 	 */
 	public String status(String _repo_name);
