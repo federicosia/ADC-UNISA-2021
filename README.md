@@ -15,7 +15,7 @@ Each **peer** has a **DHT** where it can store its work. A DHT is composed of *p
 The P2P Git protocol developed is composed, mainly, of six operations plus one of support:
 
 1. ```createRepository```  
-&emsp;Creates a new local repository, with a name, in a directory pointed by the user.
+&emsp;Creates a new local repository, with a name,  in a directory pointed by the user.
 
 2. ```addFilesToRepository```  
 &emsp;Adds one or more files in the local repository, the files are **NOT CREATED** but are tracked by Git, so it's up to the user **physically** create the files in the local repository.
@@ -34,6 +34,8 @@ The P2P Git protocol developed is composed, mainly, of six operations plus one o
 
 7. ```status```  
 &emsp;Shows the state of the local repository and the staging area. It shows which changes have been staged, which haven't, and which files are tracked and aren't tracked by Git.
+
+---
 
 The repository is represented by the ```Repository``` class, is allows the user to create, manage and control the state of the repositories. It's composed by the following fields:  
 
@@ -55,6 +57,8 @@ The repository is represented by the ```Repository``` class, is allows the user 
 - ```id```  
 &emsp;Unique id
 
+---
+
 A ```commit``` is an object that keeps some informations of a commit made by an user:  
 
 - ```repository name```  
@@ -74,6 +78,8 @@ A ```commit``` is an object that keeps some informations of a commit made by an 
 
 - ```file names```  
 &emsp;List of filenames that where modified by this commit.
+
+---
 
 A ```crate``` is an object that wraps a file, keeps track of the state of a file that makes the repository, it contains:
 
