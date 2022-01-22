@@ -13,6 +13,7 @@ Each **peer** has a **DHT** where it can store its work. A DHT is composed of *p
 
 ## Implementation
 <br>
+
 The P2P Git protocol developed is composed, mainly, of six operations plus one of support:
 
 1. ```createRepository```  
