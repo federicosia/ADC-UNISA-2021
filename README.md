@@ -38,8 +38,7 @@ The P2P Git protocol developed is composed, mainly, of six operations plus one o
 &emsp;Shows the state of the local repository and the staging area. It shows which changes have been staged, which haven't, and which files are tracked and aren't tracked by Git.
 
 ---
-### Repository
-<br>
+### Repository  
 
 The repository is represented by the ```Repository``` class, is allows the user to create, manage and control the state of the repositories. It's composed by the following fields:  
 
@@ -62,8 +61,7 @@ The repository is represented by the ```Repository``` class, is allows the user 
 &emsp;Unique id
 
 ---
-### Commit
-<br>
+### Commit  
 
 A ```commit``` is an object that keeps some informations of a commit made by an user:  
 
@@ -86,8 +84,7 @@ A ```commit``` is an object that keeps some informations of a commit made by an 
 &emsp;List of filenames that where modified by this commit.
 
 ---
-### Crate
-<br>
+### Crate  
 
 A ```crate``` is an object that wraps a file, keeps track of the state of a file that makes the repository, it contains:
 
@@ -104,7 +101,7 @@ A ```crate``` is an object that wraps a file, keeps track of the state of a file
 &emsp;Unique id used to compare **crate** objects.
 
 
-## Interactions
+## Interactions  
 
 The user can interact with Git using these **keywords**, the correct usage of the commands is also written in the ***syntax*** section for each available command:
 
