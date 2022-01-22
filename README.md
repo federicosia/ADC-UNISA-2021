@@ -1,6 +1,7 @@
 # P2P Git Protocol
 
 ## Introduction
+<br>
 
 This software simulates the Git protocol on a P2P network using **distributed hash tables** (*DHT*).
 
@@ -11,7 +12,7 @@ Each **peer** can *push* its work remotely and store a **local repository** remo
 Each **peer** has a **DHT** where it can store its work. A DHT is composed of *pairs*, each pair is composed by a *key*, in this case the name of the repository, which refers to a *value*, in this case the repository object shared by the peer. A peer in the network can download a repository of another peer's DHT by simply *pulling* its work by typing the repository name.
 
 ## Implementation
-
+<br>
 The P2P Git protocol developed is composed, mainly, of six operations plus one of support:
 
 1. ```createRepository```  
@@ -36,6 +37,8 @@ The P2P Git protocol developed is composed, mainly, of six operations plus one o
 &emsp;Shows the state of the local repository and the staging area. It shows which changes have been staged, which haven't, and which files are tracked and aren't tracked by Git.
 
 ---
+### Repository
+<br>
 
 The repository is represented by the ```Repository``` class, is allows the user to create, manage and control the state of the repositories. It's composed by the following fields:  
 
@@ -58,6 +61,8 @@ The repository is represented by the ```Repository``` class, is allows the user 
 &emsp;Unique id
 
 ---
+### Commit
+<br>
 
 A ```commit``` is an object that keeps some informations of a commit made by an user:  
 
@@ -80,6 +85,8 @@ A ```commit``` is an object that keeps some informations of a commit made by an 
 &emsp;List of filenames that where modified by this commit.
 
 ---
+### Crate
+<br>
 
 A ```crate``` is an object that wraps a file, keeps track of the state of a file that makes the repository, it contains:
 
