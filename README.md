@@ -1,7 +1,6 @@
 # P2P Git Protocol
 
 ## Introduction
-<br>
 
 This software simulates the Git protocol on a P2P network using **distributed hash tables** (*DHT*).
 
