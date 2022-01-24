@@ -176,4 +176,28 @@ public class GitProtocolImpl implements GitProtocol{
             return "Something went wrong...";
         }
     }
+
+    public List<String> statusGetStagedFiles(String _repo_name){
+        Repository localRepo = localStorage.get(_repo_name);
+
+        return (localRepo != null) ? localRepo.getStagedFiles() : null;
+    }
+
+    public List<String> statusGetUnstagedFiles(String _repo_name) throws IOException{
+        Repository localRepo = localStorage.get(_repo_name);
+        
+        return (localRepo != null) ? localRepo.getUnstagedFiles() : null;
+    }
+
+    public List<String> statusGetTrackedFiles(String _repo_name) throws IOException{
+        Repository localRepo = localStorage.get(_repo_name);
+        
+        return (localRepo != null) ? localRepo.getTrackedFiles() : null;
+    }
+
+    public List<String> statusGetUntrackedFiles(String _repo_name){
+        Repository localRepo = localStorage.get(_repo_name);
+        
+        return (localRepo != null) ? localRepo.getUntrackedFiles() : null;
+    }
 }

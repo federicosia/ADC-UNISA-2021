@@ -49,10 +49,10 @@ The repository is represented by the ```Repository``` class, is allows the user 
 &emsp;The path of the repository in the file system.  
 
 - ```tracked files```  
-&emsp;An **hash map** that keeps track of the files that are currently tracked by Git, it's composed by pairs of **<key, value>** where the *key* is the name of the file, and the *value* is a ```crate``` object.  
+&emsp;An **linked hash map** that keeps track of the files that are currently tracked by Git, it's composed by pairs of **<key, value>** where the *key* is the name of the file, and the *value* is a ```crate``` object. **Linked hash map** are used to maintain the insertion order, which is useful when testing the status method.
 
 - ```staged files```  
-&emsp;An **hash map** that keeps files that are **staged**, namely files that are modified by the user with *add* or *remove* commands. It's composed by pairs of **<key, value>** where the *key* is the name of the file, and the *value* is a ```crate``` object. When a commit is made the staged files replace the tracked ones.  
+&emsp;An **linked hash map** that keeps files that are **staged**, namely files that are modified by the user with *add* or *remove* commands. It's composed by pairs of **<key, value>** where the *key* is the name of the file, and the *value* is a ```crate``` object. When a commit is made the staged files replace the tracked ones. **Linked hash map** are used to maintain the insertion order, which is useful when testing the status method.  
 
 - ```commits```  
 &emsp;A list of ```commit``` made by the users.  
@@ -157,4 +157,8 @@ The user can interact with Git using these **keywords**, this section will also 
 
 <br>
 
-## Test cases
+## Test cases  
+
+Test cases are written using **JUnit 5**, each test case creates and delete directories to simulate the local repositories of each user in a Network.  
+The test class ```GitProtocolImplMethodsTest``` have one test method for each method in ```GitProtocol```, every method is tested separately.  
+The test class ```GitProtocolImplUseCaseTest``` simulate a use case of the ```GitProtocol``` with 4 peers with multiple repositories, in this test case all operations are tested together.

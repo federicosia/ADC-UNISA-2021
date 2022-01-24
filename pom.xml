@@ -83,6 +83,8 @@
             <descriptorRefs>
               <descriptorRef>jar-with-dependencies</descriptorRef>
             </descriptorRefs>
+            <finalName>p2p-git-protocol</finalName>
+            <appendAssemblyId>false</appendAssemblyId>
           </configuration>
           <executions>
             <execution>

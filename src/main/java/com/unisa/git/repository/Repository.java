@@ -9,8 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -25,16 +25,16 @@ import com.unisa.git.exceptions.RepositoryException;
 public class Repository implements Serializable{
     private String name;
     private String path;
-    private HashMap<String, Crate> trackedFiles;
-    private HashMap<String, Crate> stagedFiles;
+    private LinkedHashMap<String, Crate> trackedFiles;
+    private LinkedHashMap<String, Crate> stagedFiles;
     private ArrayList<Commit> commits;
     private String id;
 
     public Repository(String name, File directory) throws IOException{
         this.name = name;
         this.path = Paths.get(directory.getAbsolutePath(), name).toString();
-        this.trackedFiles = new HashMap<>();
-        this.stagedFiles = new HashMap<>();
+        this.trackedFiles = new LinkedHashMap<>();
+        this.stagedFiles = new LinkedHashMap<>();
         this.commits = new ArrayList<>();
         this.id = "null";
         Files.createDirectories(Paths.get(path));
@@ -226,8 +226,8 @@ public class Repository implements Serializable{
      */
     public List<String> getStagedFiles(){
         List<String> names = new ArrayList<String>();
-        for(Crate crate : this.stagedFiles.values())
-            names.add(crate.getName());
+        for(String filename: this.stagedFiles.keySet())
+            names.add(filename);
 
         return names;
     }

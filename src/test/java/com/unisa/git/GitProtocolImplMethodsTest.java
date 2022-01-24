@@ -19,7 +19,7 @@ import com.unisa.git.storage.DHTStorage;
 @TestInstance(Lifecycle.PER_CLASS)
 public class GitProtocolImplMethodsTest {
     //Peers
-    private static GitProtocol peer1, peer2;
+    private static GitProtocolImpl peer1, peer2;
 
     //repo's names
     private static final String repo_name1 = "test1";
@@ -28,6 +28,7 @@ public class GitProtocolImplMethodsTest {
     private static final String repo_name4 = "test4";
     private static final String repo_name5 = "test5";
     private static final String repo_name6 = "test6";
+    private static final String repo_name7 = "test7";
 
     //repo's paths
     private static final String path_to_repo1 = Paths.get(System.getProperty("user.dir"), repo_name1).toString();
@@ -37,7 +38,8 @@ public class GitProtocolImplMethodsTest {
     private static final String path_to_repo5 = Paths.get(System.getProperty("user.dir"), repo_name5).toString();
     private static final String path_to_repo61 = Paths.get(System.getProperty("user.dir"), repo_name6).toString();
     private static final String path_to_repo62 = Paths.get(System.getProperty("user.dir"), "supp", repo_name6).toString();
-    
+    private static final String path_to_repo7 = Paths.get(System.getProperty("user.dir"), repo_name7).toString();
+
     //files
     private static final String esp1 = "prova1.txt";
     private static final String esp2 = "prova2.txt";
@@ -205,6 +207,55 @@ public class GitProtocolImplMethodsTest {
         this.deleteFiles(new File(path_to_repo61));
         this.deleteFiles(new File(path_to_repo62));
         Files.delete(Paths.get(System.getProperty("user.dir"), "supp"));
+    }
+
+    @Test
+    void testCaseStatus() throws IOException{
+        String resultPush = "Created new remote repository, pushed all files successfully!\n";
+        peer1.createRepository(repo_name7, new File(System.getProperty("user.dir")));
+        Path path1 = Paths.get(path_to_repo7, esp1);
+        Path path2 = Paths.get(path_to_repo7, esp2);
+        Path path3 = Paths.get(path_to_repo7, esp3);
+        Path path4 = Paths.get(path_to_repo7, esp4);
+        
+        Files.write(path1, "ciao1".getBytes(StandardCharsets.UTF_8));
+        Files.write(path2, "ciao2".getBytes(StandardCharsets.UTF_8));
+        Files.write(path3, "ciao3".getBytes(StandardCharsets.UTF_8));
+        Files.write(path4, "ciao4".getBytes(StandardCharsets.UTF_8));
+
+        List<File> files = new ArrayList<>();
+        files.add(new File(path1.toString()));
+        files.add(new File(path2.toString()));
+        files.add(new File(path3.toString()));
+        files.add(new File(path4.toString()));
+
+        assertTrue(peer1.addFilesToRepository(repo_name7, files));
+        assertTrue(peer1.commit(repo_name7, "This is a commit"));
+        
+        //add
+        files.clear();
+        Files.write(path1, "ao1".getBytes(StandardCharsets.UTF_8));
+        Files.write(path2, "ao2".getBytes(StandardCharsets.UTF_8));
+        Files.write(path3, "ao3".getBytes(StandardCharsets.UTF_8));
+        Files.write(path4, "ao4".getBytes(StandardCharsets.UTF_8));
+
+        files.add(new File(path1.toString()));
+        files.add(new File(path2.toString()));
+        files.add(new File(path3.toString()));
+        files.add(new File(path4.toString()));
+        assertTrue(peer1.addFilesToRepository(repo_name7, files));
+
+        //modify path1 without add
+        Files.write(path1, "o1".getBytes(StandardCharsets.UTF_8));
+        
+        //assert status
+        assertArrayEquals(new String [] {esp1, esp2, esp3, esp4}, peer1.statusGetStagedFiles(repo_name7).toArray());
+        assertArrayEquals(new String [] {esp1}, peer1.statusGetUnstagedFiles(repo_name7).toArray());
+        assertArrayEquals(new String [] {esp1, esp2, esp3, esp4}, peer1.statusGetTrackedFiles(repo_name7).toArray());
+        assertArrayEquals(new String [] {}, peer1.statusGetUntrackedFiles(repo_name7).toArray());
+
+        assertEquals(peer1.push(repo_name7), resultPush);
+        this.deleteFiles(new File(path_to_repo7));
     }
 
     private void deleteFiles(File file){
