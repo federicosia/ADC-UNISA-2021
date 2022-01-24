@@ -167,7 +167,7 @@ public class GitProtocolImplUseCaseTest {
         filesRepo2.clear();
         filesRepo2.add(path1Remove.toFile());
         filesRepo2.add(path2Remove.toFile());
-        assertTrue(peer2.removeFilesToRepository(repo1, filesRepo2));
+        assertTrue(peer2.removeFilesFromRepository(repo1, filesRepo2));
         assertTrue(peer2.commit(repo1, "rimozione"));
         assertEquals(pushOk, peer2.push(repo1));
 
@@ -198,7 +198,7 @@ public class GitProtocolImplUseCaseTest {
 
         //peer3 pull but with conflicts, remove file at path32 and push repo1
         assertEquals(pullYesConflicts, peer3.pull(repo1));
-        assertTrue(peer3.removeFilesToRepository(repo1, filesRepo3.subList(1, 2)));
+        assertTrue(peer3.removeFilesFromRepository(repo1, filesRepo3.subList(1, 2)));
         assertTrue(peer3.commit(repo1, "rim"));
         assertEquals(pushOk, peer3.push(repo1));
         

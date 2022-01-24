@@ -90,7 +90,7 @@ public class Main
                             for(int i = 2; i < splitInput.length; i++)
                                 files.add(new File(splitInput[i]));
         
-                            boolean result = git.removeFilesToRepository(splitInput[1], files);
+                            boolean result = git.removeFilesFromRepository(splitInput[1], files);
                             if(result)
                                 terminal.println("Removed files successfully!\n");
                         }
@@ -157,7 +157,7 @@ public class Main
         return "\nCommands:\n" +
                 "\tcreate\tallows you the creation of a local repository.\n" +
                 "\t\tSyntax: git create {0} {1}\n\t\targs: {0} repository name, {1} directory name.\n\n" +
-                "\tadd\tallows you to add one or multiple files from the local repository.\n" +
+                "\tadd\tallows you to add one or multiple files to the local repository.\n" +
                 "\t\tSyntax: git add {0} {1} || [list]\n\t\targs: {0} repository name, {1} file name or directory, [list] file names separeted by a space\n\n" +
                 "\tremove allows you to remove one or multiple files from the local repository\n" +
                 "\t\tSyntax: git remove {0} {1} || [list]\n\t\targs: {0} repository name, {1} file name or directory, [list] file names seprated by a space\n\n" +
@@ -165,9 +165,9 @@ public class Main
                 "\t\tSyntax: git commit {0}, {1}\n\t\targs: {0} repository name, {1} message\n\n" +
                 "\tpush\tallows you to push files to the remote repository.\n" +
                 "\t\tSyntax: git push {0}\n\t\targs: {0} repository name.\n\n" +
-                "\tpull\tallows you to obtain files in the remote repository and store them in the local repository.\n" +
+                "\tpull\tallows you to obtain files from the remote repository and store them in the local repository.\n" +
                 "\t\tSyntax: git pull {0}\n\t\targs: {0} repository name.\n\n" +
-                "\tstatus\tallows you to check the status of the local repository, it shows the name of files that are staged,\n \t\tunstaged and untracked\n" +
+                "\tstatus\tallows you to check the status of the local repository, it shows the name of files that are staged,\n \t\tunstaged, tracked and untracked\n" +
                 "\t\tSyntax: git status {0}\n\t\targs: {0} repository name.\n\n" +
                 "\thelp\treprint commands list\n\n" +
                 "\texit\tclose git.\n\n";

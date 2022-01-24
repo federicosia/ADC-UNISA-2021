@@ -79,7 +79,7 @@ public class GitProtocolImplMethodsTest {
     }
 
     @Test
-    void testCaseRemoveFilesToRepository() throws IOException{
+    void testCaseRemoveFilesFromRepository() throws IOException{
         peer1.createRepository(repo_name3, new File(System.getProperty("user.dir")));
         Path path1 = Paths.get(path_to_repo3, esp1);
         Path path2 = Paths.get(path_to_repo3, esp2);
@@ -99,7 +99,7 @@ public class GitProtocolImplMethodsTest {
 
         assertTrue(peer1.addFilesToRepository(repo_name3, files));
         assertTrue(peer1.commit(repo_name3, "commit"));
-        assertTrue(peer1.removeFilesToRepository(repo_name3, files));
+        assertTrue(peer1.removeFilesFromRepository(repo_name3, files));
         this.deleteFiles(new File(path_to_repo3));
     }
 

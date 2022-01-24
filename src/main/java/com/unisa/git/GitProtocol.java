@@ -26,7 +26,7 @@ public interface GitProtocol {
 	 * @param files a list of Files to be removed to the repository.
 	 * @return true if it is correctly removed, false otherwise.
 	 */
-	public boolean removeFilesToRepository(String _repo_name, List<File> files);
+	public boolean removeFilesFromRepository(String _repo_name, List<File> files);
 
 	/**
 	 * Apply the changing to the files in  the local repository.

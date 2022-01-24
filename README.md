@@ -10,8 +10,9 @@ Each **peer** can *push* its work remotely and store a **local repository** remo
 
 Each **peer** has a **DHT** where it can store its work. A DHT is composed of *pairs*, each pair is composed by a *key*, in this case the name of the repository, which refers to a *value*, in this case the repository object shared by the peer. A peer in the network can download a repository of another peer's DHT by simply *pulling* its work by typing the repository name.
 
-## Implementation
 <br>
+
+## Implementation
 
 The P2P Git protocol developed is composed, mainly, of six operations plus one of support:
 
@@ -111,11 +112,49 @@ The local storage class is called ```GitStorage```, in this object are stored al
 
 #### Remote Storage
 
-The remote storage class is called ```DHTStorage```, with this class we simulate the P2P Network using a DHT for each user. The user can interact with the Network using the commands **pull**, to download a repository from a DHT, and **push**, to upload the repository's state into a DHT.
+The remote storage class is called ```DHTStorage```, with this class we simulate the P2P Network using a DHT for each user. The user can interact with the Network using the commands **pull**, to download a repository from a DHT, and **push**, to upload the repository's state into a DHT.  
+
+<br>
 
 ## Interactions  
 
-The user can interact with Git using these **keywords**, the correct usage of the commands is also written in the ***syntax*** section for each available command:
+The user can interact with Git using these **keywords**, this section will also explain how to write a proper command, every command execute one method of the ```GitProtocol```:
+ 
+> ```create```  
+&emsp;Refers to ```createRepository```, allows the creation of a new local repository.  
+**Syntax:** ```git create {0} {1}```  
+**Args:** ```{0} repository name, {1} directory name.```  
 
->```create```  
-&emsp;Refers to ```createRepository```, 
+> ```add```  
+&emsp;Refers to ```addFilesToRepository```, allows the addition of one or multiple files to the local repository.  
+**Syntax:** ```git add {0} {1} || [list]```  
+**Args:** ```{0} repository name, {1} file name or directory, [list] file names separeted by a space```  
+
+> ```remove```  
+&emsp;Refers to ```removeFilesFromRepository```, allows the removal of one or multiple files from the local repository.  
+**Syntax:** ```git remove {0} {1} || [list]```  
+**Args:** ```{0} repository name, {1} file name or directory, [list] file names seprated by a space```  
+
+> ```commit```  
+&emsp;Refers to ```commit```, allows you the creation of commit in the local repository.  
+**Syntax:** ```git commit {0}, {1}```
+**Args:** ```args: {0} repository name, {1} message```  
+
+> ```push```  
+&emsp;Refers to ```push```, allows pushing of files to the remote repository.  
+**Syntax:** ```git push {0}```  
+**Args:** ```args: {0} repository name```  
+
+> ```pull```  
+&emsp;Refers to ```pull```, allows to get files from the remote repository and store them in the local repository.  
+**Syntax:** ```git pull {0}```  
+**Args:** ```args: {0} repository name```  
+
+> ```status```
+&emsp;Refers to ```status```, allows to check the status of the local repository, it shows the name of files that are staged, unstaged, tracked and untracked.  
+**Syntax:** ```git status {0}```  
+**Args:** ```args: {0} repository name```  
+
+<br>
+
+## Test cases

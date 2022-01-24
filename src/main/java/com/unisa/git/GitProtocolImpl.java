@@ -51,7 +51,7 @@ public class GitProtocolImpl implements GitProtocol{
         }        
     }
 
-    public boolean removeFilesToRepository(String _repo_name, List<File> files){
+    public boolean removeFilesFromRepository(String _repo_name, List<File> files){
         try {
             Repository localRepo = localStorage.get(_repo_name);
             if(localRepo != null)
