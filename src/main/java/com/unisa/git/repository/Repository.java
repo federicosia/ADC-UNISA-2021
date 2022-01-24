@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -25,16 +25,16 @@ import com.unisa.git.exceptions.RepositoryException;
 public class Repository implements Serializable{
     private String name;
     private String path;
-    private LinkedHashMap<String, Crate> trackedFiles;
-    private LinkedHashMap<String, Crate> stagedFiles;
+    private HashMap<String, Crate> trackedFiles;
+    private HashMap<String, Crate> stagedFiles;
     private ArrayList<Commit> commits;
     private String id;
 
     public Repository(String name, File directory) throws IOException{
         this.name = name;
         this.path = Paths.get(directory.getAbsolutePath(), name).toString();
-        this.trackedFiles = new LinkedHashMap<>();
-        this.stagedFiles = new LinkedHashMap<>();
+        this.trackedFiles = new HashMap<>();
+        this.stagedFiles = new HashMap<>();
         this.commits = new ArrayList<>();
         this.id = "null";
         Files.createDirectories(Paths.get(path));

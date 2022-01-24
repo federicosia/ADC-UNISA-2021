@@ -49,10 +49,10 @@ The repository is represented by the ```Repository``` class, is allows the user 
 &emsp;The path of the repository in the file system.  
 
 - ```tracked files```  
-&emsp;An **linked hash map** that keeps track of the files that are currently tracked by Git, it's composed by pairs of **<key, value>** where the *key* is the name of the file, and the *value* is a ```crate``` object. **Linked hash map** are used to maintain the insertion order, which is useful when testing the status method.
+&emsp;An **hash map** that keeps track of the files that are currently tracked by Git, it's composed by pairs of **<key, value>** where the *key* is the name of the file, and the *value* is a ```crate``` object.
 
 - ```staged files```  
-&emsp;An **linked hash map** that keeps files that are **staged**, namely files that are modified by the user with *add* or *remove* commands. It's composed by pairs of **<key, value>** where the *key* is the name of the file, and the *value* is a ```crate``` object. When a commit is made the staged files replace the tracked ones. **Linked hash map** are used to maintain the insertion order, which is useful when testing the status method.  
+&emsp;An **hash map** that keeps files that are **staged**, namely files that are modified by the user with *add* or *remove* commands. It's composed by pairs of **<key, value>** where the *key* is the name of the file, and the *value* is a ```crate``` object. When a commit is made the staged files replace the tracked ones.
 
 - ```commits```  
 &emsp;A list of ```commit``` made by the users.  
@@ -112,7 +112,7 @@ The local storage class is called ```GitStorage```, in this object are stored al
 
 #### Remote Storage
 
-The remote storage class is called ```DHTStorage```, with this class we simulate the P2P Network using a DHT for each user. The user can interact with the Network using the commands **pull**, to download a repository from a DHT, and **push**, to upload the repository's state into a DHT.  
+The remote storage class is called ```DHTStorage```, with this class we simulate the P2P Network using a DHT for each user thanks to TomP2P API. The user can interact with the Network using the commands **pull**, to download a repository from a DHT, and **push**, to upload the repository's state into a DHT.  
 
 <br>
 

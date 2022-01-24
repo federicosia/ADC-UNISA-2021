@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.unisa.git.storage.DHTStorage;
@@ -19,7 +20,7 @@ import com.unisa.git.storage.DHTStorage;
  * This test class is made to test GitProtocolImpl with a network of 4 peers.
  */
 public class GitProtocolImplUseCaseTest {
-    private static GitProtocol peer1, peer2, peer3, peer4;
+    private static GitProtocolImpl peer1, peer2, peer3, peer4;
 
     //Push messages
     private static final String pushOk = "Pushed all files successfully!\n";
@@ -114,6 +115,16 @@ public class GitProtocolImplUseCaseTest {
         assertTrue(peer3.addFilesToRepository(repo3, filesRepo3));
         assertTrue(peer4.addFilesToRepository(repo4, filesRepo4));
     
+        List<String> testStaged = Arrays.asList("esp1", "esp2", "esp3");
+        List<String> staged = peer1.statusGetStagedFiles(repo1);
+
+        //check status peer1
+        assertTrue(testStaged.containsAll(staged) && staged.containsAll(testStaged));
+        assertArrayEquals(new String[] {}, peer1.statusGetUnstagedFiles(repo1).toArray());
+        assertArrayEquals(new String[] {}, peer1.statusGetTrackedFiles(repo1).toArray());
+        assertArrayEquals(new String[] {}, peer1.statusGetUntrackedFiles(repo1).toArray());
+
+
         //create another local repo for peer2, 3 and 4 (peer1 has already repo1)
         assertTrue(peer2.createRepository(repo1, new File(pathRepo2)));
         assertTrue(peer3.createRepository(repo1, new File(pathRepo3)));
@@ -168,7 +179,17 @@ public class GitProtocolImplUseCaseTest {
         filesRepo2.add(path1Remove.toFile());
         filesRepo2.add(path2Remove.toFile());
         assertTrue(peer2.removeFilesFromRepository(repo1, filesRepo2));
+        
+        List<String> tracked = peer2.statusGetTrackedFiles(repo1);
+        List<String> testTracked = Arrays.asList("esp1", "esp2", "esp3", "esp1_(1)", "esp2_(1)");
+        assertTrue(tracked.containsAll(testTracked) && testTracked.containsAll(tracked));
+        
         assertTrue(peer2.commit(repo1, "rimozione"));
+        
+        tracked = peer2.statusGetTrackedFiles(repo1);
+        testTracked = Arrays.asList("esp1", "esp2", "esp3");
+        assertTrue(tracked.containsAll(testTracked) && testTracked.containsAll(tracked));
+        
         assertEquals(pushOk, peer2.push(repo1));
 
         //peer4 commit and push repo4
@@ -186,11 +207,24 @@ public class GitProtocolImplUseCaseTest {
         filesRepo4.add(path12.toFile());
         filesRepo4.add(path32.toFile());
         filesRepo4.add(path14.toFile());
+
         assertTrue(peer4.addFilesToRepository(repo1, filesRepo4));
         //just for a check
         assertFalse(peer4.addFilesToRepository(repo1, filesRepo4.subList(0, 1)));
 
         assertTrue(peer4.commit(repo1, "asda"));
+        
+        //unstaged changes
+        Files.write(path12, "blblbl".getBytes(StandardCharsets.UTF_8));
+        Files.write(path32, "aaaaa".getBytes(StandardCharsets.UTF_8));
+        Files.write(path14, "asxz".getBytes(StandardCharsets.UTF_8));
+
+        //check for unstaged files with status
+        List<String> unstaged = peer4.statusGetUnstagedFiles(repo1);
+        List<String> testUnstaged = Arrays.asList("esp12", "esp32", "esp14");
+
+        assertTrue(unstaged.containsAll(testUnstaged) && testUnstaged.containsAll(unstaged));
+        
         assertEquals(pushOutOfDate, peer4.push(repo1));
         assertEquals(pullYesConflicts, peer4.pull(repo1));
         //just for a check

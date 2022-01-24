@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.unisa.git.storage.DHTStorage;
@@ -248,11 +249,24 @@ public class GitProtocolImplMethodsTest {
         //modify path1 without add
         Files.write(path1, "o1".getBytes(StandardCharsets.UTF_8));
         
+        //staged
+        List<String> testStaged = Arrays.asList(esp1, esp2, esp3, esp4);
+        List<String> staged = peer1.statusGetStagedFiles(repo_name7);
+        //unstaged
+        List<String> testUnstaged = Arrays.asList(esp1);
+        List<String> unstaged = peer1.statusGetUnstagedFiles(repo_name7);
+        //tracked
+        List<String> testTracked = Arrays.asList(esp1, esp2, esp3, esp4);
+        List<String> tracked = peer1.statusGetTrackedFiles(repo_name7);
+        //untracked
+        List<String> testUntracked = Arrays.asList();
+        List<String> untracked = peer1.statusGetUntrackedFiles(repo_name7);
+
         //assert status
-        assertArrayEquals(new String [] {esp1, esp2, esp3, esp4}, peer1.statusGetStagedFiles(repo_name7).toArray());
-        assertArrayEquals(new String [] {esp1}, peer1.statusGetUnstagedFiles(repo_name7).toArray());
-        assertArrayEquals(new String [] {esp1, esp2, esp3, esp4}, peer1.statusGetTrackedFiles(repo_name7).toArray());
-        assertArrayEquals(new String [] {}, peer1.statusGetUntrackedFiles(repo_name7).toArray());
+        assertTrue(testStaged.containsAll(staged) && staged.containsAll(testStaged));
+        assertTrue(testStaged.containsAll(unstaged) && staged.containsAll(testUnstaged));
+        assertTrue(testStaged.containsAll(tracked) && staged.containsAll(testTracked));
+        assertTrue(testStaged.containsAll(untracked) && staged.containsAll(testUntracked));
 
         assertEquals(peer1.push(repo_name7), resultPush);
         this.deleteFiles(new File(path_to_repo7));
