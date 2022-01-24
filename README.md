@@ -59,8 +59,9 @@ The repository is represented by the ```Repository``` class, is allows the user 
 - ```id```  
 &emsp;Unique id
 
----
-### Commit  
+A repository uses other specific classes to operate, **commit** and **crate**.  
+
+#### Commit  
 
 A ```commit``` is an object that keeps some informations of a commit made by an user:  
 
@@ -80,10 +81,9 @@ A ```commit``` is an object that keeps some informations of a commit made by an 
 &emsp;Tells if the commits has been pushed or not.  
 
 - ```file names```  
-&emsp;List of filenames that where modified by this commit.
+&emsp;List of filenames that where modified by this commit.  
 
----
-### Crate  
+#### Crate  
 
 A ```crate``` is an object that wraps a file, keeps track of the state of a file that makes the repository, it contains:
 
@@ -99,6 +99,19 @@ A ```crate``` is an object that wraps a file, keeps track of the state of a file
 - ```id```  
 &emsp;Unique id used to compare **crate** objects.
 
+---
+
+### Storage  
+
+Storage is an ```interface``` used as the bases to developing the **local storage** class and the **remote storage** class where repositories are stored locally and remotely, respectively. Repositories are stored in *<key, value>* pairs where the key is an identifier and value is the repository itself. 
+
+#### Local Storage
+
+The local storage class is called ```GitStorage```, in this object are stored all the user's local repositories, the user can modify the repository he wants just by adding the repository name when he runs a Git command with the terminal.  
+
+#### Remote Storage
+
+The remote storage class is called ```DHTStorage```, with this class we simulate the P2P Network using a DHT for each user. The user can interact with the Network using the commands **pull**, to download a repository from a DHT, and **push**, to upload the repository's state into a DHT.
 
 ## Interactions  
 

@@ -4,7 +4,7 @@ import com.unisa.git.repository.Repository;
 
 /**
  * Storage is a abstract representation of a storage where all repositories are stored.
- * Repositories are stored in pairs of <key, value> where's key is an hash of the repo's name
+ * Repositories are stored in pairs of <key, value> where's key is an identifier of the repo's name
  * and value is the repo itself.
  */
 public interface Storage {
