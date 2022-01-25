@@ -137,7 +137,7 @@ The user can interact with Git using these **keywords**, this section will also 
 
 > ```commit```  
 &emsp;Refers to ```commit```, allows you the creation of commit in the local repository.  
-**Syntax:** ```git commit {0}, {1}```
+**Syntax:** ```git commit {0}, {1}```  
 **Args:** ```args: {0} repository name, {1} message```  
 
 > ```push```  
