@@ -198,11 +198,13 @@ The built ```.jar``` will also be the *artifact* of the project. Maven will give
 
 ## Dockerization  
 
-In the project forlder is also present a ```Dockerfile``` to convert the application solution to run within a Docker container. The ```Dockerfile``` is based on the image ```openjdk:11``` to have a ready to go Java environment, next is created a working dir called ```app``` were the ```.jar``` is stored and also the local repositories creted at run-time. Two commands are run:  
+There is also a ```Dockerfile``` in the project folder to convert the application solution to run within a Docker container. The ```Dockerfile``` is based on the ```openjdk:11``` image to have a ready-to-use Java environment, then a working dir called ```app``` is created where the ```.jar``` and the local repositories created at run-time are stored. After the initial setup of the container, two commands are executed:  
+
 - ```apt-get update```  
-&emsp;to have a container up-to-date  
+&emsp;to have the container up-to-date  
 
-- ```apt-get install nano```
-&emsp;to have a simple text editor to modify files, otherwise we wouldn't be able to modify the content of files in the repositories inside the container.
+- ```apt-get install nano```  
+&emsp;to have a simple text editor to edit the files, otherwise we wouldn't be able to modify the content of files in the repositories inside the container.
 
-After the two commands, two ```arg``` are set, ```ip``` to set the ip address of the peer and an ```id``` to identify the peer in the network. To conclude, ```java -jar p2p-git-protocol.jar``` with `-m` for the ip address and `-id` for the unique id of the peer.  
+After that, two ```arg``` are set, ```ip``` to set the ip address of the peer and an ```id``` to identify the peer in the network.  
+When the container starts, ```java -jar p2p-git-protocol.jar``` with `-m` for the ip address and `-id` for the unique id of the peer is run  
