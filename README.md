@@ -161,4 +161,39 @@ The user can interact with Git using these **keywords**, this section will also 
 
 Test cases are written using **JUnit 5**, each test case creates and delete directories to simulate the local repositories of each user in a Network.  
 The test class ```GitProtocolImplMethodsTest``` have one test method for each method in ```GitProtocol```, every method is tested separately.  
-The test class ```GitProtocolImplUseCaseTest``` simulate a use case of the ```GitProtocol``` with 4 peers with multiple repositories, in this test case all operations are tested together.
+The test class ```GitProtocolImplUseCaseTest``` simulate a use case of the ```GitProtocol``` with 4 peers with multiple repositories, all operations are tested together in a single test method.
+
+<br>
+
+## Apache Maven  
+
+Apache Maven is used as project management tool, using a file named **pom.xml** we add plugins to help builds and, with the *Maven Central Repository*, extra dependencies.  
+Dependencies used are the following:  
+
+- ```net.tomp2p```  
+&emsp;DHT features needed to simulate a P2P network.  
+
+- ```org.juint.jupiter```  
+&emsp;Used for testing.
+
+- ```org.beryx```  
+&emsp;For creating Java console applications.
+
+- ```args4j```  
+&emsp;Utility API that makes command line parsing very easy by using annotations.  
+
+Plugins used and configurations made are listed below (standard plugins are not listed):  
+
+- ```maven-surefire-plugin```  
+&emsp;Used to run tests cases before build. Tests are ignored because when running ```mvn package``` the peer's directories, used in the test cases, are not deleted. Running tests without Maven shouldn't give any problems.  
+
+- ```maven-jar-plugin```  
+&emsp;Used to build a jar file of the project.
+
+- ```maven-assembly-plugin```  
+&emsp;Used to merge all dependecies into a single ```.jar``` file, without this plugin the dependecies would be missing. ```<descriptorRef>``` is used to perform a custom assembly of the ```.jar``` file. The ```appendAssemblyId``` tag is set to false in order to rename the ```.jar``` file built with this plugin, otherwise the name would be ```<finalName>-jar-with-dependencies```, setting false ```-jar-with-dependencies``` will be omitted. The ```.jar``` built will also be the *artifact* of the project. Maven will give a warning when run ```mvn package``` because two ```.jar``` files have the same artifact id, but it's not a problem because the last ```.jar``` created, in this case the ```.jar``` with all the dependencies needed, will survive.
+
+<br>
+
+## Docker  
+
