@@ -191,9 +191,18 @@ Plugins used and configurations made are listed below (standard plugins are not 
 &emsp;Used to build a jar file of the project.
 
 - ```maven-assembly-plugin```  
-&emsp;Used to merge all dependecies into a single ```.jar``` file, without this plugin the dependecies would be missing. ```<descriptorRef>``` is used to perform a custom assembly of the ```.jar``` file. The ```appendAssemblyId``` tag is set to false in order to rename the ```.jar``` file built with this plugin, otherwise the name would be ```<finalName>-jar-with-dependencies```, setting false ```-jar-with-dependencies``` will be omitted. The ```.jar``` built will also be the *artifact* of the project. Maven will give a warning when run ```mvn package``` because two ```.jar``` files have the same artifact id, but it's not a problem because the last ```.jar``` created, in this case the ```.jar``` with all the dependencies needed, will survive.
+&emsp;Used to merge all dependecies into a single ```.jar``` file, without this plugin the dependecies would be missing. ```<descriptorRef>``` is used to perform a custom assembly of the ```.jar``` file. The ```appendAssemblyId``` tag is set to false to rename the ```.jar``` file built with this plugin, otherwise the name would be ```<finalName>-jar-with-dependencies```, setting false ```-jar-with-dependencies``` will be omitted.  
+The built ```.jar``` will also be the *artifact* of the project. Maven will give a warning when run ```mvn package``` because two ```.jar``` files have the same artifact id, but it's not a problem because the last ```.jar``` created, in this case the ```.jar``` with all the dependencies needed, will survive as the main artifact because it was built last.
 
 <br>
 
-## Docker  
+## Dockerization  
 
+In the project forlder is also present a ```Dockerfile``` to convert the application solution to run within a Docker container. The ```Dockerfile``` is based on the image ```openjdk:11``` to have a ready to go Java environment, next is created a working dir called ```app``` were the ```.jar``` is stored and also the local repositories creted at run-time. Two commands are run:  
+- ```apt-get update```  
+&emsp;to have a container up-to-date  
+
+- ```apt-get install nano```
+&emsp;to have a simple text editor to modify files, otherwise we wouldn't be able to modify the content of files in the repositories inside the container.
+
+After the two commands, two ```arg``` are set, ```ip``` to set the ip address of the peer and an ```id``` to identify the peer in the network. To conclude, ```java -jar p2p-git-protocol.jar``` with `-m` for the ip address and `-id` for the unique id of the peer.  

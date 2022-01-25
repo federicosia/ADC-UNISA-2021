@@ -74,18 +74,6 @@
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
           <version>3.3.0</version>
-          <configuration>
-            <archive>
-              <manifest>
-                <mainClass>com.unisa.Main</mainClass>
-              </manifest>
-            </archive>
-            <descriptorRefs>
-              <descriptorRef>jar-with-dependencies</descriptorRef>
-            </descriptorRefs>
-            <finalName>p2p-git-protocol</finalName>
-            <appendAssemblyId>false</appendAssemblyId>
-          </configuration>
           <executions>
             <execution>
               <id>make-assembly</id>
@@ -93,6 +81,18 @@
               <goals>
                 <goal>single</goal>
               </goals>
+              <configuration>
+                <archive>
+                  <manifest>
+                    <mainClass>com.unisa.Main</mainClass>
+                  </manifest>
+                </archive>
+                <descriptorRefs>
+                  <descriptorRef>jar-with-dependencies</descriptorRef>
+                </descriptorRefs>
+                <finalName>p2p-git-protocol</finalName>
+                <appendAssemblyId>false</appendAssemblyId>
+              </configuration>
             </execution>
           </executions>
         </plugin>
