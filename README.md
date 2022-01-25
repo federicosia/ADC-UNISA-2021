@@ -198,7 +198,7 @@ The built ```.jar``` will also be the *artifact* of the project. Maven will give
 
 ## Dockerization  
 
-There is also a ```Dockerfile``` in the project folder to convert the application solution to run within a Docker container. The ```Dockerfile``` is based on the ```openjdk:11``` image to have a ready-to-use Java environment, then a working dir called ```app``` is created where the ```.jar``` and the local repositories created at run-time are stored. After the initial setup of the container, two commands are executed:  
+There is also a ```Dockerfile``` in the project folder to convert the application solution to run within a Docker container. The container will be based on the ```openjdk:11``` image to have a ready-to-use Java environment, then a working dir called ```app``` is created where the ```.jar``` and the local repositories created at run-time are stored. After the initial setup of the container, two commands are executed:  
 
 - ```apt-get update```  
 &emsp;to have the container up-to-date  
