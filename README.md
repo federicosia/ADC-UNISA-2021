@@ -128,12 +128,12 @@ The user can interact with Git using these **keywords**, this section will also 
 > ```add```  
 &emsp;Refers to ```addFilesToRepository```, allows the addition of one or multiple files to the local repository.  
 **Syntax:** ```git add {0} {1} || [list]```  
-**Args:** ```{0} repository name, {1} file name or directory, [list] file names separeted by a space```  
+**Args:** ```{0} repository name, {1} file name, [list] file names separeted by a space```  
 
 > ```remove```  
 &emsp;Refers to ```removeFilesFromRepository```, allows the removal of one or multiple files from the local repository.  
 **Syntax:** ```git remove {0} {1} || [list]```  
-**Args:** ```{0} repository name, {1} file name or directory, [list] file names seprated by a space```  
+**Args:** ```{0} repository name, {1} file name, [list] file names seprated by a space```  
 
 > ```commit```  
 &emsp;Refers to ```commit```, allows you the creation of commit in the local repository.  
@@ -208,3 +208,16 @@ There is also a ```Dockerfile``` in the project folder to convert the applicatio
 
 After that, two ```arg``` are set, ```ip``` to set the ip address of the peer and an ```id``` to identify the peer in the network.  
 When the container starts, ```java -jar p2p-git-protocol.jar``` with `-m` for the ip address and `-id` for the unique id of the peer is run  
+
+## Build the app in a Docker container  
+
+Build a docker container:  
+```docker build --no-cache -t p2p-git-protocol .```
+
+### Start the master peer  
+
+```docker run -i --name MASTER-PEER -e ip="172.17.0.1" -e id=0 p2p-pp-client```
+
+### Start a peer  
+
+```docker run -i --name PEER_1 -e ip="172.17.0.2" -e id=1 p2p-pp-client```
