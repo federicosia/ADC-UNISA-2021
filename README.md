@@ -2,13 +2,13 @@
 
 ## Introduction
 
-This software simulates the Git protocol on a P2P network using **distributed hash tables** (*DHT*).
+This software simulates the Git protocol on a P2P network using **distributed hash table** (*DHT*).
 
 Each **peer** has one or more local *repositories* where it can store files dedicated to one or more projects.
 
 Each **peer** can *push* its work remotely and store a **local repository** remotely, more precisely store the repository in a **DHT**.
 
-Each **peer** has a **DHT** where it can store its work. A DHT is composed of *pairs*, each pair is composed by a *key*, in this case the name of the repository, which refers to a *value*, in this case the repository object shared by the peer. A peer in the network can download a repository of another peer's DHT by simply *pulling* its work by typing the repository name.
+A DHT is composed of *pairs*, each pair is composed by a *key*, in this case the name of the repository, which refers to a *value*, in this case the repository object shared by the peer. A peer in the network can download a repository of another peer by simply *pull* its work by typing the repository name.
 
 <br>
 
@@ -112,7 +112,7 @@ The local storage class is called ```GitStorage```, in this object are stored al
 
 #### Remote Storage
 
-The remote storage class is called ```DHTStorage```, with this class we simulate the P2P Network using a DHT for each user thanks to TomP2P API. The user can interact with the Network using the commands **pull**, to download a repository from a DHT, and **push**, to upload the repository's state into a DHT.  
+The remote storage class is called ```DHTStorage```, with this class we simulate the P2P Network using a DHT thanks to TomP2P API. The user can interact with the Network using the commands **pull**, to download a repository from the DHT, and **push**, to upload the repository's state into the DHT.  
 
 <br>
 
