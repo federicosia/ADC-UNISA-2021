@@ -204,7 +204,7 @@ There is also a ```Dockerfile``` in the project folder to convert the applicatio
 &emsp;to have the container up-to-date  
 
 - ```apt-get install nano```  
-&emsp;to have a simple text editor to edit the files, otherwise we wouldn't be able to modify the content of files in the repositories inside the container.
+&emsp;to have a simple text editor to edit the files, otherwise we wouldn't be able to modify or create files in the repository's directory.
 
 After that, two ```arg``` are set, ```ip``` to set the ip address of the peer and an ```id``` to identify the peer in the network.  
 When the container starts, ```java -jar p2p-git-protocol.jar``` with `-m` for the ip address and `-id` for the unique id of the peer is run  
